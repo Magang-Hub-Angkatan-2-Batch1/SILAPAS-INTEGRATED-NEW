@@ -2,6 +2,7 @@ import React from 'react';
 import { 
   PackageSearch, 
   FileText, 
+  HardDrive,
   Instagram, 
   Facebook, 
   Youtube, 
@@ -9,16 +10,24 @@ import {
   Share2, 
   ExternalLink, 
   Workflow, 
-  Sparkles
+  Sparkles,
+  Edit3
 } from 'lucide-react';
 import { ServiceItem } from '../types';
 
 interface ServiceCardProps {
   service: ServiceItem;
   onOpenWorkflow: (service: ServiceItem) => void;
+  isAdmin?: boolean;
+  onEditLink?: (service: ServiceItem) => void;
 }
 
-export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onOpenWorkflow }) => {
+export const ServiceCard: React.FC<ServiceCardProps> = ({ 
+  service, 
+  onOpenWorkflow,
+  isAdmin = false,
+  onEditLink
+}) => {
   // Helper to pick the matching Lucide icon
   const renderIcon = () => {
     const iconClass = "w-6 h-6";
@@ -27,6 +36,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onOpenWorkflo
         return <PackageSearch className={iconClass} />;
       case 'FileText':
         return <FileText className={iconClass} />;
+      case 'HardDrive':
+        return <HardDrive className={iconClass} />;
       case 'Instagram':
         return <Instagram className={iconClass} />;
       case 'Facebook':
@@ -47,6 +58,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onOpenWorkflo
         return 'bg-amber-500/10 text-amber-600 border border-amber-200';
       case 'sdm-jurnal-harian':
         return 'bg-blue-500/10 text-blue-600 border border-blue-200';
+      case 'data-pegawai-gdrive':
+        return 'bg-emerald-500/10 text-emerald-600 border border-emerald-200';
       case 'sosmed-instagram':
         return 'bg-pink-500/10 text-pink-600 border border-pink-200';
       case 'sosmed-facebook':
@@ -140,6 +153,19 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onOpenWorkflo
           <span>{service.actionText}</span>
           <ExternalLink className="w-4 h-4 ml-auto text-sky-300" />
         </a>
+
+        {/* Admin Edit Link Button (Only for Admin on Pegawai and Sosmed items) */}
+        {isAdmin && (service.category === 'pegawai' || service.category === 'sosmed') && (
+          <button
+            type="button"
+            onClick={() => onEditLink?.(service)}
+            className="w-full mt-2.5 py-1.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+            title="Edit Tautan (Khusus Admin)"
+          >
+            <Edit3 className="w-3.5 h-3.5 text-amber-700" />
+            <span>Edit Tautan {service.category === 'pegawai' ? 'Google Drive' : 'Medsos'}</span>
+          </button>
+        )}
 
         {isInternalWorkflow && (
           <button

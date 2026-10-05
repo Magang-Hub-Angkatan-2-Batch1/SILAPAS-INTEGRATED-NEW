@@ -1,19 +1,29 @@
 import React from 'react';
 import { 
+  Menu,
   PhoneCall, 
   Clock, 
-  Code2, 
   Building2, 
-  ExternalLink, 
-  ShieldCheck 
+  ShieldCheck,
+  KeyRound,
+  LogOut
 } from 'lucide-react';
 
 interface HeaderProps {
-  onOpenCodeModal: () => void;
+  onOpenMenu: () => void;
   onScrollToSearch: () => void;
+  isAdmin: boolean;
+  onOpenLogin: () => void;
+  onLogout: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenCodeModal, onScrollToSearch }) => {
+export const Header: React.FC<HeaderProps> = ({ 
+  onOpenMenu, 
+  onScrollToSearch,
+  isAdmin,
+  onOpenLogin,
+  onLogout
+}) => {
   // Simple check for Indonesian public office hours (WIB is UTC+7)
   const [currentWibTime, setCurrentWibTime] = React.useState<string>('');
   const [isOpenNow, setIsOpenNow] = React.useState<boolean>(false);
@@ -101,8 +111,19 @@ export const Header: React.FC<HeaderProps> = ({ onOpenCodeModal, onScrollToSearc
 
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4">
-        {/* Brand identity */}
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        {/* Left: Hamburger Button & Brand Identity */}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          {/* Hamburger Menu Button */}
+          <button
+            type="button"
+            onClick={onOpenMenu}
+            className="p-2 -ml-1 text-slate-200 hover:text-amber-300 bg-slate-800/80 hover:bg-slate-700/90 active:bg-slate-900 border border-slate-700 rounded-xl transition-all flex items-center justify-center shrink-0 shadow-xs focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+            aria-label="Buka Menu Navigasi"
+            title="Menu Navigasi SILAPAS"
+          >
+            <Menu className="w-5 h-5 text-amber-400" />
+          </button>
+
           <img 
             src="/logo.jpg" 
             alt="Logo Kementerian Imigrasi dan Pemasyarakatan" 
@@ -133,15 +154,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenCodeModal, onScrollToSearc
             Cari Layanan
           </button>
 
-          <button
-            onClick={onOpenCodeModal}
-            className="hidden sm:inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-lg transition-colors"
-            title="Lihat atau salin kode HTML single-file Tailwind CDN"
-          >
-            <Code2 className="w-3.5 h-3.5 text-amber-400" />
-            <span>Single-File HTML</span>
-          </button>
-
           <a
             href="https://wa.me/6281274346822?text=Halo%20Lapas%20Perempuan%20Pangkal%20Pinang,%20saya%20ingin%20memperoleh%20informasi%20layanan."
             target="_blank"
@@ -151,6 +163,35 @@ export const Header: React.FC<HeaderProps> = ({ onOpenCodeModal, onScrollToSearc
             <PhoneCall className="w-3.5 h-3.5 shrink-0" />
             <span>Pengaduan</span>
           </a>
+
+          {/* Admin Login / Status Button */}
+          {!isAdmin ? (
+            <button
+              type="button"
+              onClick={onOpenLogin}
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 active:bg-amber-500/30 border border-amber-500/30 hover:border-amber-400/60 rounded-lg transition-all shadow-xs shrink-0"
+              title="Masuk sebagai Administrator untuk mengedit tautan"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+              <span>Login</span>
+            </button>
+          ) : (
+            <div className="inline-flex items-center gap-1.5 shrink-0">
+              <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 rounded-lg">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                <span>Admin</span>
+              </span>
+              <button
+                type="button"
+                onClick={onLogout}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-rose-300 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 rounded-lg transition-all shadow-xs"
+                title="Keluar dari mode admin"
+              >
+                <LogOut className="w-3.5 h-3.5 text-rose-400" />
+                <span className="hidden xs:inline">Logout</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

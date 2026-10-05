@@ -1,9 +1,9 @@
-export type ServiceCategory = 'all' | 'layanan' | 'sosmed';
+export type ServiceCategory = 'all' | 'layanan' | 'pegawai' | 'sosmed';
 
 export interface ServiceItem {
   id: string;
   title: string;
-  category: 'layanan' | 'sosmed';
+  category: 'layanan' | 'pegawai' | 'sosmed';
   categoryLabel: string;
   subTitle?: string;
   description: string;

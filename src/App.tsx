@@ -9,10 +9,14 @@ import { Hero } from './components/Hero';
 import { ServiceCard } from './components/ServiceCard';
 import { BmnWorkflowModal } from './components/BmnWorkflowModal';
 import { SdmWorkflowModal } from './components/SdmWorkflowModal';
-import { SingleFileCodeModal } from './components/SingleFileCodeModal';
+import { OfficeProfileModal } from './components/OfficeProfileModal';
+import { OfficialsProfileModal } from './components/OfficialsProfileModal';
+import { FaqModal } from './components/FaqModal';
+import { AdminLoginModal } from './components/AdminLoginModal';
+import { EditLinkModal } from './components/EditLinkModal';
+import { NavigationDrawer } from './components/NavigationDrawer';
 import { Footer } from './components/Footer';
 import { SERVICES_DATA } from './data/services';
-import { STANDALONE_HTML_CODE } from './data/singleFileCode';
 import { ServiceCategory, ServiceItem } from './types';
 import { 
   Building2, 
@@ -21,7 +25,9 @@ import {
   Sparkles, 
   ShieldCheck, 
   FileCheck2, 
-  Layers
+  Layers,
+  HardDrive,
+  HelpCircle
 } from 'lucide-react';
 
 export default function App() {
@@ -29,12 +35,121 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<ServiceCategory>('all');
   const [isBmnModalOpen, setIsBmnModalOpen] = useState(false);
   const [isSdmModalOpen, setIsSdmModalOpen] = useState(false);
-  const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isOfficeModalOpen, setIsOfficeModalOpen] = useState(false);
+  const [isOfficialsModalOpen, setIsOfficialsModalOpen] = useState(false);
+  const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
+
+  // Admin authentication state
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('silapas_admin_auth') === 'true';
+    } catch {
+      return false;
+    }
+  });
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  // Edit Link Modal state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingService, setEditingService] = useState<ServiceItem | null>(null);
+
+  // Dynamic services list with localStorage persistence for customized links
+  const [servicesList, setServicesList] = useState<ServiceItem[]>(() => {
+    try {
+      const stored = localStorage.getItem('silapas_custom_links');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return SERVICES_DATA.map((item) => {
+          if (parsed[item.id]) {
+            return {
+              ...item,
+              url: parsed[item.id].url || item.url,
+              subTitle: parsed[item.id].subTitle !== undefined ? parsed[item.id].subTitle : item.subTitle,
+            };
+          }
+          return item;
+        });
+      }
+    } catch {
+      // fallback to initial data
+    }
+    return SERVICES_DATA;
+  });
+
+  const handleLoginSuccess = () => {
+    setIsAdmin(true);
+    try {
+      localStorage.setItem('silapas_admin_auth', 'true');
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAdmin(false);
+    try {
+      localStorage.removeItem('silapas_admin_auth');
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleOpenEditLink = (service: ServiceItem) => {
+    setEditingService(service);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveLink = (serviceId: string, newUrl: string, newSubTitle?: string) => {
+    setServicesList((prev) => {
+      const updated = prev.map((s) => {
+        if (s.id === serviceId) {
+          return {
+            ...s,
+            url: newUrl,
+            subTitle: newSubTitle !== undefined && newSubTitle !== '' ? newSubTitle : s.subTitle,
+          };
+        }
+        return s;
+      });
+
+      try {
+        const stored = localStorage.getItem('silapas_custom_links');
+        const parsed = stored ? JSON.parse(stored) : {};
+        parsed[serviceId] = { url: newUrl, subTitle: newSubTitle };
+        localStorage.setItem('silapas_custom_links', JSON.stringify(parsed));
+      } catch {
+        // ignore
+      }
+
+      return updated;
+    });
+  };
+
+  const handleResetDefault = (serviceId: string) => {
+    const original = SERVICES_DATA.find((s) => s.id === serviceId);
+    if (!original) return;
+
+    setServicesList((prev) => {
+      const updated = prev.map((s) => (s.id === serviceId ? { ...original } : s));
+      try {
+        const stored = localStorage.getItem('silapas_custom_links');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          delete parsed[serviceId];
+          localStorage.setItem('silapas_custom_links', JSON.stringify(parsed));
+        }
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+  };
 
   // Filter services based on query and active category
   const filteredServices = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
-    return SERVICES_DATA.filter((item) => {
+    return servicesList.filter((item) => {
       // Category filter
       const matchesCategory =
         activeCategory === 'all' || item.category === activeCategory;
@@ -52,11 +167,16 @@ export default function App() {
 
       return titleMatch || subTitleMatch || descMatch || categoryMatch || tagsMatch;
     });
-  }, [searchQuery, activeCategory]);
+  }, [searchQuery, activeCategory, servicesList]);
 
   // Group filtered services by category for clean sectioning
   const layananServices = useMemo(
     () => filteredServices.filter((s) => s.category === 'layanan'),
+    [filteredServices]
+  );
+
+  const pegawaiServices = useMemo(
+    () => filteredServices.filter((s) => s.category === 'pegawai'),
     [filteredServices]
   );
 
@@ -82,12 +202,55 @@ export default function App() {
     }
   };
 
+  const handleNavigateHome = () => {
+    setSearchQuery('');
+    setActiveCategory('all');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavigatePegawai = () => {
+    setActiveCategory('pegawai');
+    setTimeout(() => {
+      const el = document.getElementById('data-pegawai');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
+  const handleNavigateSosmed = () => {
+    setActiveCategory('sosmed');
+    setTimeout(() => {
+      const el = document.getElementById('media-sosial');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans selection:bg-blue-900 selection:text-white">
-      {/* 1. Header */}
+      {/* 1. Header with Hamburger Menu Button and Admin Login Button */}
       <Header
-        onOpenCodeModal={() => setIsCodeModalOpen(true)}
+        onOpenMenu={() => setIsDrawerOpen(true)}
         onScrollToSearch={scrollToSearch}
+        isAdmin={isAdmin}
+        onOpenLogin={() => setIsLoginModalOpen(true)}
+        onLogout={handleLogout}
+      />
+
+      {/* Navigation Drawer (Sidebar Hamburger Menu) */}
+      <NavigationDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        onNavigateHome={handleNavigateHome}
+        onOpenOfficeProfile={() => setIsOfficeModalOpen(true)}
+        onOpenOfficialsProfile={() => setIsOfficialsModalOpen(true)}
+        onOpenBmn={() => setIsBmnModalOpen(true)}
+        onOpenJhp={() => setIsSdmModalOpen(true)}
+        onOpenPegawai={handleNavigatePegawai}
+        onNavigateSosmed={handleNavigateSosmed}
+        onOpenFaq={() => setIsFaqModalOpen(true)}
       />
 
       {/* 2. Hero with Search and Category Filter */}
@@ -96,12 +259,37 @@ export default function App() {
         setSearchQuery={setSearchQuery}
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}
-        totalCount={SERVICES_DATA.length}
+        totalCount={servicesList.length}
         filteredCount={filteredServices.length}
       />
 
       {/* 3. Main Services Content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+        {/* Admin Notification Banner when logged in */}
+        {isAdmin && (
+          <div className="mb-8 p-3.5 sm:p-4 bg-amber-500/10 border border-amber-400/50 rounded-2xl flex items-center justify-between gap-3 shadow-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-amber-400 text-slate-950 rounded-xl">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <strong className="text-xs sm:text-sm text-slate-900 block font-black">
+                  Mode Administrator Aktif (lppkelasiiipkp@gmail.com)
+                </strong>
+                <p className="text-[11px] sm:text-xs text-slate-600">
+                  Anda memiliki akses untuk mengedit link <strong>Data Informasi Pegawai (Google Drive)</strong> dan link <strong>Media Sosial Resmi</strong>.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="px-3 py-1.5 bg-white hover:bg-slate-50 text-rose-700 text-xs font-bold border border-slate-200 rounded-lg shadow-xs transition-colors shrink-0"
+            >
+              Keluar
+            </button>
+          </div>
+        )}
+
         {/* If no services matched the filter */}
         {filteredServices.length === 0 ? (
           <div className="text-center py-16 px-4 bg-white rounded-2xl border border-slate-200 shadow-sm max-w-xl mx-auto">
@@ -131,7 +319,7 @@ export default function App() {
             {/* SECTION 1: Layanan & Website Lapas */}
             {(activeCategory === 'all' || activeCategory === 'layanan') &&
               layananServices.length > 0 && (
-                <section>
+                <section id="layanan-lapas">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-6">
                     <div>
                       <h2 className="text-xl sm:text-2xl font-black text-[#0B192C] flex items-center gap-2.5">
@@ -156,16 +344,54 @@ export default function App() {
                         key={service.id}
                         service={service}
                         onOpenWorkflow={handleOpenWorkflow}
+                        isAdmin={isAdmin}
+                        onEditLink={handleOpenEditLink}
                       />
                     ))}
                   </div>
                 </section>
               )}
 
-            {/* SECTION 2: Media Sosial Resmi */}
+            {/* SECTION 2: Data Informasi Pegawai (Google Drive) */}
+            {(activeCategory === 'all' || activeCategory === 'pegawai') &&
+              pegawaiServices.length > 0 && (
+                <section id="data-pegawai">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-6">
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-black text-[#0B192C] flex items-center gap-2.5">
+                        <HardDrive className="w-6 h-6 text-emerald-600" />
+                        <span>Data Informasi Pegawai</span>
+                      </h2>
+                      <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                        Pusat penyimpanan digital dan repositori arsip berkas kepegawaian melalui Google Drive resmi
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-emerald-800 bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-200">
+                        {pegawaiServices.length} Repositori Aktif
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {pegawaiServices.map((service) => (
+                      <ServiceCard
+                        key={service.id}
+                        service={service}
+                        onOpenWorkflow={handleOpenWorkflow}
+                        isAdmin={isAdmin}
+                        onEditLink={handleOpenEditLink}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )}
+
+            {/* SECTION 3: Media Sosial Resmi */}
             {(activeCategory === 'all' || activeCategory === 'sosmed') &&
               sosmedServices.length > 0 && (
-                <section>
+                <section id="media-sosial">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-6">
                     <div>
                       <h2 className="text-xl sm:text-2xl font-black text-[#0B192C] flex items-center gap-2.5">
@@ -190,6 +416,8 @@ export default function App() {
                         key={service.id}
                         service={service}
                         onOpenWorkflow={handleOpenWorkflow}
+                        isAdmin={isAdmin}
+                        onEditLink={handleOpenEditLink}
                       />
                     ))}
                   </div>
@@ -219,18 +447,32 @@ export default function App() {
 
             <div className="flex flex-wrap items-center gap-2 shrink-0">
               <button
+                onClick={() => setIsOfficeModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-xl shadow-xs transition-colors"
+              >
+                <Building2 className="w-4 h-4 text-amber-600" />
+                <span>Profil Kantor</span>
+              </button>
+              <button
+                onClick={() => setIsFaqModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl shadow-xs transition-colors"
+              >
+                <HelpCircle className="w-4 h-4 text-amber-600" />
+                <span>FAQ Magang Hub</span>
+              </button>
+              <button
                 onClick={() => setIsBmnModalOpen(true)}
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-xl shadow-xs transition-colors"
               >
-                <FileCheck2 className="w-4 h-4 text-amber-600" />
-                <span>Lihat SOP BMN</span>
+                <FileCheck2 className="w-4 h-4 text-emerald-600" />
+                <span>SOP SI-BMN</span>
               </button>
               <button
                 onClick={() => setIsSdmModalOpen(true)}
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-xl shadow-xs transition-colors"
               >
                 <FileCheck2 className="w-4 h-4 text-sky-600" />
-                <span>Lihat SOP SDM</span>
+                <span>SOP SDM / JHP</span>
               </button>
             </div>
           </div>
@@ -238,6 +480,35 @@ export default function App() {
       </main>
 
       {/* 4. Modals */}
+      <AdminLoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+
+      <EditLinkModal
+        isOpen={isEditModalOpen}
+        service={editingService}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSaveLink}
+        onResetDefault={handleResetDefault}
+      />
+
+      <OfficeProfileModal
+        isOpen={isOfficeModalOpen}
+        onClose={() => setIsOfficeModalOpen(false)}
+      />
+
+      <OfficialsProfileModal
+        isOpen={isOfficialsModalOpen}
+        onClose={() => setIsOfficialsModalOpen(false)}
+      />
+
+      <FaqModal
+        isOpen={isFaqModalOpen}
+        onClose={() => setIsFaqModalOpen(false)}
+      />
+
       <BmnWorkflowModal
         isOpen={isBmnModalOpen}
         onClose={() => setIsBmnModalOpen(false)}
@@ -248,14 +519,8 @@ export default function App() {
         onClose={() => setIsSdmModalOpen(false)}
       />
 
-      <SingleFileCodeModal
-        isOpen={isCodeModalOpen}
-        onClose={() => setIsCodeModalOpen(false)}
-        singleFileCode={STANDALONE_HTML_CODE}
-      />
-
       {/* 5. Footer */}
-      <Footer onOpenCodeModal={() => setIsCodeModalOpen(true)} />
+      <Footer />
     </div>
   );
 }

@@ -15,11 +15,7 @@ import {
   Share2
 } from 'lucide-react';
 
-interface FooterProps {
-  onOpenCodeModal?: () => void;
-}
-
-export const Footer: React.FC<FooterProps> = ({ onOpenCodeModal }) => {
+export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -222,18 +218,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenCodeModal }) => {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2 text-slate-500 text-[11px]">
             <span>SILAPAS-INTEGRATED v1.0</span>
-            {onOpenCodeModal && (
-              <>
-                <span>&bull;</span>
-                <button
-                  type="button"
-                  onClick={onOpenCodeModal}
-                  className="text-amber-400/90 hover:text-amber-300 underline font-medium transition-colors"
-                >
-                  Kode Single-File HTML
-                </button>
-              </>
-            )}
             <span>&bull;</span>
             <span className="text-amber-400/90 font-medium">Pemasyarakatan PASTI</span>
           </div>
