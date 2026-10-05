@@ -13,7 +13,9 @@ import {
   ChevronRight, 
   PhoneCall, 
   ShieldCheck,
-  Landmark
+  Landmark,
+  KeyRound,
+  LogOut
 } from 'lucide-react';
 
 interface NavigationDrawerProps {
@@ -27,6 +29,9 @@ interface NavigationDrawerProps {
   onOpenPegawai: () => void;
   onNavigateSosmed: () => void;
   onOpenFaq: () => void;
+  isAdmin?: boolean;
+  onOpenLogin?: () => void;
+  onLogout?: () => void;
 }
 
 export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
@@ -40,6 +45,9 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onOpenPegawai,
   onNavigateSosmed,
   onOpenFaq,
+  isAdmin = false,
+  onOpenLogin,
+  onLogout,
 }) => {
   // Profil submenu state (expanded by default so user sees Profil Kantor & Profil Pejabat)
   const [isProfileOpen, setIsProfileOpen] = useState(true);
@@ -274,6 +282,53 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 </span>
               </div>
             </button>
+          </div>
+
+          {/* 8. Mobile Admin Login / Status Row */}
+          <div className="pt-2 border-t border-slate-800/80">
+            {!isAdmin ? (
+              <button
+                type="button"
+                onClick={() => {
+                  onOpenLogin?.();
+                  onClose();
+                }}
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all text-left"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 rounded-lg bg-amber-400/20 text-amber-400">
+                    <KeyRound className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="block text-white">Login Admin</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Akses edit tautan</span>
+                  </div>
+                </div>
+                <span className="text-[10px] text-amber-400 font-semibold px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">
+                  Masuk &rarr;
+                </span>
+              </button>
+            ) : (
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-400/40 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-white block truncate">Admin Aktif</span>
+                    <span className="text-[10px] text-slate-400 truncate block">lppkelasiiipkp@gmail.com</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onLogout?.();
+                    onClose();
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/40 text-xs font-bold transition-colors shrink-0"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </nav>
 

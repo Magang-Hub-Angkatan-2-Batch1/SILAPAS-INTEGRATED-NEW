@@ -251,6 +251,9 @@ export default function App() {
         onOpenPegawai={handleNavigatePegawai}
         onNavigateSosmed={handleNavigateSosmed}
         onOpenFaq={() => setIsFaqModalOpen(true)}
+        isAdmin={isAdmin}
+        onOpenLogin={() => setIsLoginModalOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* 2. Hero with Search and Category Filter */}

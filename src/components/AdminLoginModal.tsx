@@ -91,7 +91,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-5 sm:p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-4">
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-2.5 text-xs text-blue-900">
             <ShieldCheck className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
             <span>
@@ -129,7 +129,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="lppkelasiiipkp@gmail.com"
-                  className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
               </div>
             </div>
@@ -149,7 +149,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Masukkan kata sandi"
-                  className="w-full pl-9 pr-10 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full pl-9 pr-10 py-2 text-base sm:text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
                 <button
                   type="button"
@@ -166,7 +166,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
             <button
               type="submit"
               disabled={isSuccess}
-              className="w-full py-2.5 px-4 bg-[#0F2C59] hover:bg-[#1E3E62] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-4 bg-[#0F2C59] hover:bg-[#1E3E62] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 min-h-[44px]"
             >
               <Lock className="w-4 h-4" />
               <span>Masuk Sebagai Admin</span>

@@ -266,42 +266,42 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
                 </h5>
 
                 {/* Visual Tree matching Official Document Image 1 */}
-                <div className="max-w-2xl mx-auto flex flex-col items-center">
+                <div className="max-w-2xl mx-auto flex flex-col items-center w-full">
                   {/* Puncak: Kepala Lapas */}
-                  <div className="w-72 p-3.5 rounded-xl bg-[#0B192C] text-white text-center shadow-lg border-2 border-amber-400">
+                  <div className="w-full max-w-[280px] p-3 sm:p-3.5 rounded-xl bg-[#0B192C] text-white text-center shadow-lg border-2 border-amber-400">
                     <span className="text-[10px] uppercase font-bold text-amber-300 block">Pimpinan UPT</span>
-                    <strong className="text-sm block">KEPALA LAPAS</strong>
-                    <div className="text-xs font-bold text-white mt-0.5">Rina Setiari</div>
+                    <strong className="text-xs sm:text-sm block">KEPALA LAPAS</strong>
+                    <div className="text-xs sm:text-sm font-bold text-white mt-0.5">Rina Setiari</div>
                     <span className="text-[10px] font-mono text-slate-300">NIP: 198304102003122001</span>
                   </div>
 
-                  {/* Vertical line down to Kaur TU offset */}
-                  <div className="w-0.5 h-6 bg-slate-400" />
+                  {/* Vertical line down to Kaur TU */}
+                  <div className="w-0.5 h-4 sm:h-6 bg-slate-400" />
 
-                  {/* Kaur TU (Offset to the right) */}
-                  <div className="w-full flex justify-end pr-4 sm:pr-12 relative">
-                    <div className="w-60 p-3 rounded-xl bg-blue-900 text-white text-center shadow border border-blue-400">
-                      <strong className="text-xs block">KAUR TU</strong>
+                  {/* Kaur TU */}
+                  <div className="w-full flex justify-center sm:justify-end sm:pr-8 relative">
+                    <div className="w-full max-w-[240px] p-2.5 sm:p-3 rounded-xl bg-blue-900 text-white text-center shadow border border-blue-400">
+                      <strong className="text-[11px] sm:text-xs block">KAUR TU</strong>
                       <div className="text-xs font-semibold text-white">Evi Aswani</div>
                       <span className="text-[10px] font-mono text-blue-200">NIP: 198404082005012001</span>
                     </div>
                   </div>
 
                   {/* Vertical line down */}
-                  <div className="w-0.5 h-6 bg-slate-400" />
+                  <div className="w-0.5 h-4 sm:h-6 bg-slate-400" />
 
-                  {/* Horizontal connecting line for 3 Subsections */}
-                  <div className="w-full max-w-lg h-0.5 bg-slate-400 relative">
+                  {/* Horizontal connecting line for 3 Subsections (desktop) */}
+                  <div className="w-full max-w-lg h-0.5 bg-slate-400 relative hidden sm:block">
                     <div className="absolute left-0 -top-1 w-2.5 h-2.5 rounded-full bg-slate-600" />
                     <div className="absolute right-0 -top-1 w-2.5 h-2.5 rounded-full bg-slate-600" />
                     <div className="absolute left-1/2 -top-1 w-2.5 h-2.5 rounded-full bg-slate-600 -translate-x-1/2" />
                   </div>
 
                   {/* 3 Subsections matching Image 1 */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full pt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full pt-2 sm:pt-4">
                     {/* Admisi & Orientasi */}
                     <div className="p-3 rounded-xl bg-white border-2 border-slate-300 text-center shadow-xs">
-                      <strong className="text-[11px] text-slate-800 block leading-tight">
+                      <strong className="text-[10px] sm:text-[11px] text-slate-800 block leading-tight">
                         KEPALA SUBSEKSI ADMISI &amp; ORIENTASI
                       </strong>
                       <div className="text-xs font-bold text-slate-900 mt-1">Ayu Annisa Pember</div>
@@ -310,7 +310,7 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
 
                     {/* Pembinaan */}
                     <div className="p-3 rounded-xl bg-white border-2 border-slate-300 text-center shadow-xs">
-                      <strong className="text-[11px] text-slate-800 block leading-tight">
+                      <strong className="text-[10px] sm:text-[11px] text-slate-800 block leading-tight">
                         KEPALA SUBSEKSI PEMBINAAN
                       </strong>
                       <div className="text-xs font-bold text-slate-900 mt-1">Mia Cahyani</div>
@@ -319,7 +319,7 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
 
                     {/* Keamanan & Ketertiban */}
                     <div className="p-3 rounded-xl bg-white border-2 border-slate-300 text-center shadow-xs">
-                      <strong className="text-[11px] text-slate-800 block leading-tight">
+                      <strong className="text-[10px] sm:text-[11px] text-slate-800 block leading-tight">
                         KEPALA SUBSEKSI KEAMANAN &amp; KETERTIBAN
                       </strong>
                       <div className="text-xs font-bold text-slate-900 mt-1">Yistarati</div>
