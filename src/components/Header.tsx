@@ -112,7 +112,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-2.5 sm:px-6 py-2 sm:py-3 flex items-center justify-between gap-1.5 sm:gap-4">
         {/* Left: Hamburger Button & Brand Identity */}
-        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 mr-1 sm:mr-3 overflow-hidden">
           {/* Hamburger Menu Button */}
           <button
             type="button"
@@ -127,19 +127,20 @@ export const Header: React.FC<HeaderProps> = ({
           <img 
             src="/logo.jpg" 
             alt="Logo Kementerian Imigrasi dan Pemasyarakatan" 
-            className="w-8 h-8 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-amber-400/80 shadow-sm shadow-amber-500/10 shrink-0"
+            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-amber-400/80 shadow-xs shrink-0"
           />
-          <div className="min-w-0">
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <h1 className="text-sm sm:text-lg md:text-xl font-extrabold tracking-tight text-white whitespace-nowrap leading-tight">
-                SILAPAS<span className="text-amber-400">-INTEGRATED</span>
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <div className="flex items-center gap-1.5">
+              <h1 className="text-xs sm:text-base md:text-xl font-extrabold tracking-tight text-white truncate leading-tight">
+                <span>SILAPAS</span><span className="text-amber-400">-INTEGRATED</span>
               </h1>
-              <span className="bg-blue-900/60 text-blue-300 border border-blue-700/50 text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider hidden lg:inline-block">
+              <span className="bg-blue-900/60 text-blue-300 border border-blue-700/50 text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider hidden lg:inline-block shrink-0">
                 Hub Informasi
               </span>
             </div>
-            <p className="text-[10px] sm:text-xs text-slate-300 truncate max-w-[140px] sm:max-w-none leading-tight mt-0.5">
-              Lapas Perempuan Kelas III Pangkal Pinang
+            <p className="text-[9px] sm:text-xs text-slate-300 truncate leading-tight mt-0.5">
+              <span className="hidden sm:inline">Lapas Perempuan Kelas III Pangkal Pinang</span>
+              <span className="sm:hidden">LPP Pangkal Pinang</span>
             </p>
           </div>
         </div>
@@ -154,15 +155,17 @@ export const Header: React.FC<HeaderProps> = ({
             Cari Layanan
           </button>
 
+          {/* Call / Pengaduan Button (Compact on mobile so it never overlaps the title) */}
           <a
             href="https://wa.me/6281274346822?text=Halo%20Lapas%20Perempuan%20Pangkal%20Pinang,%20saya%20ingin%20memperoleh%20informasi%20layanan."
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 px-2.5 sm:px-3.5 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow-sm shadow-emerald-700/30 transition-all hover:shadow shrink-0"
-            title="Pengaduan WhatsApp Lapas"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow-sm shadow-emerald-700/30 transition-all hover:shadow shrink-0"
+            title="Layanan Panggilan & Pengaduan WhatsApp Lapas: 0812-7434-6822"
+            aria-label="Panggilan Pengaduan WhatsApp"
           >
             <PhoneCall className="w-3.5 h-3.5 shrink-0" />
-            <span>Pengaduan</span>
+            <span className="hidden sm:inline">Pengaduan</span>
           </a>
 
           {/* Admin Login / Status Button */}
@@ -173,7 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 active:bg-amber-500/30 border border-amber-500/30 hover:border-amber-400/60 rounded-lg transition-all shadow-xs shrink-0"
               title="Masuk sebagai Administrator untuk mengedit tautan"
             >
-              <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+              <KeyRound className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>Login</span>
             </button>
           ) : (

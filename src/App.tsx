@@ -19,6 +19,12 @@ import { Footer } from './components/Footer';
 import { SERVICES_DATA } from './data/services';
 import { ServiceCategory, ServiceItem } from './types';
 import { 
+  fetchCustomLinksFromCloud, 
+  saveCustomLinkToCloud, 
+  deleteCustomLinkFromCloud,
+  isSupabaseConfigured
+} from './lib/supabase';
+import { 
   Building2, 
   Share2, 
   SearchX, 
@@ -77,6 +83,41 @@ export default function App() {
     return SERVICES_DATA;
   });
 
+  // Sync with Supabase cloud database on mount if configured
+  React.useEffect(() => {
+    let isMounted = true;
+
+    async function loadCloudLinks() {
+      if (!isSupabaseConfigured) return;
+      const cloudLinks = await fetchCustomLinksFromCloud();
+      if (cloudLinks && isMounted) {
+        setServicesList((prev) =>
+          prev.map((item) => {
+            if (cloudLinks[item.id]) {
+              return {
+                ...item,
+                url: cloudLinks[item.id].url || item.url,
+                subTitle: cloudLinks[item.id].subTitle !== undefined ? cloudLinks[item.id].subTitle : item.subTitle,
+              };
+            }
+            return item;
+          })
+        );
+        // Cache to localStorage
+        try {
+          localStorage.setItem('silapas_custom_links', JSON.stringify(cloudLinks));
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    loadCloudLinks();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleLoginSuccess = () => {
     setIsAdmin(true);
     try {
@@ -101,22 +142,28 @@ export default function App() {
   };
 
   const handleSaveLink = (serviceId: string, newUrl: string, newSubTitle?: string) => {
+    let cleanUrl = newUrl.trim();
+    if (cleanUrl && !cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+      cleanUrl = `https://${cleanUrl}`;
+    }
+
     setServicesList((prev) => {
       const updated = prev.map((s) => {
         if (s.id === serviceId) {
           return {
             ...s,
-            url: newUrl,
+            url: cleanUrl,
             subTitle: newSubTitle !== undefined && newSubTitle !== '' ? newSubTitle : s.subTitle,
           };
         }
         return s;
       });
 
+      // Save to localStorage as quick local cache
       try {
         const stored = localStorage.getItem('silapas_custom_links');
         const parsed = stored ? JSON.parse(stored) : {};
-        parsed[serviceId] = { url: newUrl, subTitle: newSubTitle };
+        parsed[serviceId] = { url: cleanUrl, subTitle: newSubTitle };
         localStorage.setItem('silapas_custom_links', JSON.stringify(parsed));
       } catch {
         // ignore
@@ -124,6 +171,9 @@ export default function App() {
 
       return updated;
     });
+
+    // Save to Supabase Cloud Database (so other users see it too)
+    saveCustomLinkToCloud(serviceId, cleanUrl, newSubTitle);
   };
 
   const handleResetDefault = (serviceId: string) => {
@@ -144,6 +194,9 @@ export default function App() {
       }
       return updated;
     });
+
+    // Remove from Supabase Cloud Database
+    deleteCustomLinkFromCloud(serviceId);
   };
 
   // Filter services based on query and active category

@@ -79,20 +79,20 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex">
-      {/* Backdrop */}
+      {/* Backdrop with soft blur */}
       <div 
-        className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm transition-opacity animate-fade-in"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Drawer Panel */}
+      {/* Drawer Panel - Glassmorphism Transparent & Blur */}
       <div 
-        className="relative w-80 max-w-[85vw] bg-[#0B192C] text-white shadow-2xl flex flex-col z-50 border-r border-slate-700/80 animate-slide-in-left h-full"
+        className="relative w-80 max-w-[85vw] bg-slate-900/80 backdrop-blur-2xl text-white shadow-2xl flex flex-col z-50 border-r border-white/15 animate-slide-in-left h-full overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drawer Header */}
-        <div className="p-4 sm:p-5 bg-gradient-to-b from-[#07111f] to-[#0B192C] border-b border-slate-700/80 flex items-center justify-between">
+        <div className="p-4 sm:p-5 bg-slate-950/60 backdrop-blur-md border-b border-white/10 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <img 
               src="/logo.jpg" 
@@ -113,7 +113,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+            className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
             aria-label="Tutup Menu"
           >
             <X className="w-5 h-5" />
@@ -121,29 +121,29 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
         </div>
 
         {/* Navigation Items List */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 text-sm">
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-2 text-sm">
           {/* 1. Beranda */}
           <button
             onClick={() => {
               onNavigateHome();
               onClose();
             }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white hover:bg-slate-800/90 transition-all text-left group"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
           >
-            <div className="p-1.5 rounded-lg bg-blue-500/10 text-sky-400 group-hover:bg-blue-500/20 transition-colors">
+            <div className="p-1.5 rounded-lg bg-blue-500/20 text-sky-400 group-hover:bg-blue-500/30 transition-colors">
               <Home className="w-4 h-4" />
             </div>
             <span className="flex-1">Beranda</span>
           </button>
 
           {/* 2. Profil (Collapsible / Submenu) */}
-          <div className="rounded-xl overflow-hidden bg-slate-900/40 border border-slate-800/80">
+          <div className="rounded-xl overflow-hidden bg-white/[0.04] border border-white/10 backdrop-blur-xs">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="w-full flex items-center justify-between px-3.5 py-2.5 font-bold text-slate-200 hover:text-white hover:bg-slate-800/90 transition-all text-left group"
+              className="w-full flex items-center justify-between px-3.5 py-2.5 font-bold text-slate-200 hover:text-white hover:bg-white/[0.08] transition-all text-left group"
             >
               <div className="flex items-center gap-3">
-                <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 group-hover:bg-amber-500/20 transition-colors">
+                <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 group-hover:bg-amber-500/30 transition-colors">
                   <Landmark className="w-4 h-4" />
                 </div>
                 <span>Profil</span>
@@ -159,14 +159,14 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
             {/* Submenu Items */}
             {isProfileOpen && (
-              <div className="pl-4 pr-2 pb-2 pt-1 space-y-1 border-t border-slate-800/60 bg-[#07111f]/60">
+              <div className="pl-4 pr-2 pb-2 pt-1 space-y-1 border-t border-white/10 bg-black/25">
                 {/* 2a. Profil Kantor */}
                 <button
                   onClick={() => {
                     onOpenOfficeProfile();
                     onClose();
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-amber-300 hover:bg-slate-800/80 transition-all text-left group"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-amber-300 hover:bg-white/10 transition-all text-left group"
                 >
                   <Building2 className="w-3.5 h-3.5 text-sky-400 group-hover:text-amber-400 shrink-0" />
                   <span>Profil Kantor</span>
@@ -178,7 +178,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                     onOpenOfficialsProfile();
                     onClose();
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-amber-300 hover:bg-slate-800/80 transition-all text-left group"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-amber-300 hover:bg-white/10 transition-all text-left group"
                 >
                   <Users className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                   <span>Profil Pejabat</span>
@@ -193,14 +193,14 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               onOpenBmn();
               onClose();
             }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white hover:bg-slate-800/90 transition-all text-left group"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
           >
-            <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20 transition-colors">
+            <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:bg-emerald-500/30 transition-colors">
               <PackageSearch className="w-4 h-4" />
             </div>
             <div className="flex-1 flex items-center justify-between">
               <span>SI-BMN</span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40">
                 Persediaan
               </span>
             </div>
@@ -212,14 +212,14 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               onOpenJhp();
               onClose();
             }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white hover:bg-slate-800/90 transition-all text-left group"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
           >
-            <div className="p-1.5 rounded-lg bg-blue-500/10 text-sky-400 group-hover:bg-blue-500/20 transition-colors">
+            <div className="p-1.5 rounded-lg bg-blue-500/20 text-sky-400 group-hover:bg-blue-500/30 transition-colors">
               <FileText className="w-4 h-4" />
             </div>
             <div className="flex-1 flex items-center justify-between">
               <span>JHP (Jurnal Harian Pegawai)</span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/20 text-sky-300 border border-blue-500/30">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/25 text-sky-300 border border-blue-500/40">
                 SDM
               </span>
             </div>
@@ -231,14 +231,14 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               onOpenPegawai();
               onClose();
             }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white hover:bg-slate-800/90 transition-all text-left group"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
           >
-            <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20 transition-colors">
+            <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:bg-emerald-500/30 transition-colors">
               <HardDrive className="w-4 h-4" />
             </div>
             <div className="flex-1 flex items-center justify-between">
               <span>Data Informasi Pegawai</span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40">
                 Google Drive
               </span>
             </div>
@@ -250,14 +250,14 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               onNavigateSosmed();
               onClose();
             }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white hover:bg-slate-800/90 transition-all text-left group"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
           >
-            <div className="p-1.5 rounded-lg bg-pink-500/10 text-pink-400 group-hover:bg-pink-500/20 transition-colors">
+            <div className="p-1.5 rounded-lg bg-pink-500/20 text-pink-400 group-hover:bg-pink-500/30 transition-colors">
               <Share2 className="w-4 h-4" />
             </div>
             <div className="flex-1 flex items-center justify-between">
               <span>Sosial Media</span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-pink-500/25 text-pink-300 border border-pink-500/40">
                 Resmi
               </span>
             </div>
@@ -270,9 +270,9 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 onOpenFaq();
                 onClose();
               }}
-              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-amber-300 hover:text-white bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all text-left group"
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-amber-300 hover:text-white bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/35 transition-all text-left group backdrop-blur-xs"
             >
-              <div className="p-1.5 rounded-lg bg-amber-400/20 text-amber-400 group-hover:bg-amber-400/30 transition-colors">
+              <div className="p-1.5 rounded-lg bg-amber-400/25 text-amber-300 group-hover:bg-amber-400/40 transition-colors">
                 <HelpCircle className="w-4 h-4" />
               </div>
               <div className="flex-1 flex items-center justify-between">
@@ -285,7 +285,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           </div>
 
           {/* 8. Mobile Admin Login / Status Row */}
-          <div className="pt-2 border-t border-slate-800/80">
+          <div className="pt-2 border-t border-white/10">
             {!isAdmin ? (
               <button
                 type="button"
@@ -309,7 +309,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 </span>
               </button>
             ) : (
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-400/40 flex items-center justify-between gap-2">
+              <div className="p-3 rounded-xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
                   <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
                   <div className="min-w-0">
@@ -333,8 +333,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
         </nav>
 
         {/* Drawer Footer Information */}
-        <div className="p-4 bg-[#07111f] border-t border-slate-800 space-y-3 shrink-0">
-          <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-400 space-y-1">
+        <div className="p-4 bg-slate-950/60 backdrop-blur-md border-t border-white/10 space-y-3 shrink-0">
+          <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-[11px] text-slate-400 space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-amber-400">
               <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
               <span>Sistem Terintegrasi Lapas</span>
