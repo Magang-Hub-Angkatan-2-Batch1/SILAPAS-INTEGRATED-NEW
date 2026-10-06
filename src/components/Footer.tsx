@@ -15,7 +15,11 @@ import {
   Share2
 } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenLogin?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenLogin }) => {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -220,6 +224,19 @@ export const Footer: React.FC = () => {
             <span>SILAPAS-INTEGRATED v1.0</span>
             <span>&bull;</span>
             <span className="text-amber-400/90 font-medium">Pemasyarakatan PASTI</span>
+            {onOpenLogin && (
+              <>
+                <span>&bull;</span>
+                <button
+                  type="button"
+                  onClick={onOpenLogin}
+                  className="text-slate-500 hover:text-amber-400 transition-colors cursor-pointer"
+                  title="Masuk sebagai Administrator"
+                >
+                  Akses Pengelola
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

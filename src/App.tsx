@@ -33,7 +33,8 @@ import {
   FileCheck2, 
   Layers,
   HardDrive,
-  HelpCircle
+  HelpCircle,
+  Users
 } from 'lucide-react';
 
 export default function App() {
@@ -141,7 +142,7 @@ export default function App() {
     setIsEditModalOpen(true);
   };
 
-  const handleSaveLink = (serviceId: string, newUrl: string, newSubTitle?: string) => {
+  const handleSaveLink = async (serviceId: string, newUrl: string, newSubTitle?: string) => {
     let cleanUrl = newUrl.trim();
     if (cleanUrl && !cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
       cleanUrl = `https://${cleanUrl}`;
@@ -173,7 +174,7 @@ export default function App() {
     });
 
     // Save to Supabase Cloud Database (so other users see it too)
-    saveCustomLinkToCloud(serviceId, cleanUrl, newSubTitle);
+    return await saveCustomLinkToCloud(serviceId, cleanUrl, newSubTitle);
   };
 
   const handleResetDefault = (serviceId: string) => {
@@ -321,31 +322,6 @@ export default function App() {
 
       {/* 3. Main Services Content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-        {/* Admin Notification Banner when logged in */}
-        {isAdmin && (
-          <div className="mb-8 p-3.5 sm:p-4 bg-amber-500/10 border border-amber-400/50 rounded-2xl flex items-center justify-between gap-3 shadow-xs">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-amber-400 text-slate-950 rounded-xl">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <div>
-                <strong className="text-xs sm:text-sm text-slate-900 block font-black">
-                  Mode Administrator Aktif (lppkelasiiipkp@gmail.com)
-                </strong>
-                <p className="text-[11px] sm:text-xs text-slate-600">
-                  Anda memiliki akses untuk mengedit link <strong>Data Informasi Pegawai (Google Drive)</strong> dan link <strong>Media Sosial Resmi</strong>.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="px-3 py-1.5 bg-white hover:bg-slate-50 text-rose-700 text-xs font-bold border border-slate-200 rounded-lg shadow-xs transition-colors shrink-0"
-            >
-              Keluar
-            </button>
-          </div>
-        )}
-
         {/* If no services matched the filter */}
         {filteredServices.length === 0 ? (
           <div className="text-center py-16 px-4 bg-white rounded-2xl border border-slate-200 shadow-sm max-w-xl mx-auto">
@@ -503,6 +479,13 @@ export default function App() {
 
             <div className="flex flex-wrap items-center gap-2 shrink-0">
               <button
+                onClick={() => setIsOfficialsModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-xl shadow-xs transition-colors"
+              >
+                <Users className="w-4 h-4 text-sky-600" />
+                <span>Peta Jabatan</span>
+              </button>
+              <button
                 onClick={() => setIsOfficeModalOpen(true)}
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-xl shadow-xs transition-colors"
               >
@@ -576,7 +559,7 @@ export default function App() {
       />
 
       {/* 5. Footer */}
-      <Footer />
+      <Footer onOpenLogin={() => setIsLoginModalOpen(true)} />
     </div>
   );
 }

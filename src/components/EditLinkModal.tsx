@@ -19,7 +19,7 @@ interface EditLinkModalProps {
   isOpen: boolean;
   service: ServiceItem | null;
   onClose: () => void;
-  onSave: (serviceId: string, newUrl: string, newSubTitle?: string) => void;
+  onSave: (serviceId: string, newUrl: string, newSubTitle?: string) => Promise<{ success: boolean; error?: string }> | void;
   onResetDefault: (serviceId: string) => void;
 }
 
@@ -33,12 +33,16 @@ export const EditLinkModal: React.FC<EditLinkModalProps> = ({
   const [url, setUrl] = useState('');
   const [subTitle, setSubTitle] = useState('');
   const [isSaved, setIsSaved] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveFeedback, setSaveFeedback] = useState<{ type: 'success' | 'warn'; text: string } | null>(null);
 
   useEffect(() => {
     if (service) {
       setUrl(service.url || '');
       setSubTitle(service.subTitle || '');
       setIsSaved(false);
+      setSaveFeedback(null);
+      setIsSubmitting(false);
     }
   }, [service]);
 
@@ -53,15 +57,43 @@ export const EditLinkModal: React.FC<EditLinkModalProps> = ({
     return trimmed;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const finalUrl = getCleanUrl(url);
-    onSave(service.id, finalUrl, subTitle.trim());
-    setIsSaved(true);
-    setTimeout(() => {
-      setIsSaved(false);
-      onClose();
-    }, 600);
+    setIsSubmitting(true);
+    setSaveFeedback(null);
+
+    const result = await onSave(service.id, finalUrl, subTitle.trim());
+    setIsSubmitting(false);
+
+    if (result && result.success) {
+      setSaveFeedback({ 
+        type: 'success', 
+        text: '✅ Berhasil tersimpan di Supabase Cloud! Semua pengunjung akan melihat tautan baru ini.' 
+      });
+      setIsSaved(true);
+      setTimeout(() => {
+        setIsSaved(false);
+        setSaveFeedback(null);
+        onClose();
+      }, 1400);
+    } else if (result && !result.success) {
+      setSaveFeedback({ 
+        type: 'warn', 
+        text: `⚠️ Catatan: ${result.error}` 
+      });
+      setIsSaved(true);
+      setTimeout(() => {
+        setIsSaved(false);
+        onClose();
+      }, 3000);
+    } else {
+      setIsSaved(true);
+      setTimeout(() => {
+        setIsSaved(false);
+        onClose();
+      }, 700);
+    }
   };
 
   const handleReset = () => {
@@ -120,19 +152,30 @@ export const EditLinkModal: React.FC<EditLinkModalProps> = ({
           <div className="flex items-center justify-between px-3 py-2 rounded-xl text-[11px] font-medium border bg-slate-50 border-slate-200">
             <div className="flex items-center gap-1.5">
               <Database className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-              <span className="text-slate-700 font-semibold">Status Penyimpanan:</span>
+              <span className="text-slate-700 font-semibold">Status Database Cloud:</span>
             </div>
             {isSupabaseConfigured ? (
               <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full font-bold">
                 <Cloud className="w-3 h-3 text-emerald-600" />
-                <span>Supabase Cloud (Online)</span>
+                <span>Supabase Terhubung</span>
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-slate-600 bg-slate-200/80 px-2 py-0.5 rounded-full text-[10px]" title="Tambahkan VITE_SUPABASE_URL di Cloudflare Pages agar otomatis tersinkron ke semua orang">
-                <span>Memori Browser (Belum Terhubung Cloud)</span>
+              <span className="inline-flex items-center gap-1 text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-full text-[10px] font-semibold" title="Pastikan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY telah dimasukkan di Cloudflare Pages dan di-redeploy">
+                <span>Belum Terhubung (Lokal Browser)</span>
               </span>
             )}
           </div>
+
+          {/* Feedback Message Banner */}
+          {saveFeedback && (
+            <div className={`p-3 rounded-xl flex items-start gap-2 text-xs animate-fade-in ${
+              saveFeedback.type === 'success'
+                ? 'bg-emerald-50 border border-emerald-300 text-emerald-800 font-medium'
+                : 'bg-amber-50 border border-amber-300 text-amber-900 leading-relaxed'
+            }`}>
+              <span>{saveFeedback.text}</span>
+            </div>
+          )}
 
           {/* URL Input */}
           <div>

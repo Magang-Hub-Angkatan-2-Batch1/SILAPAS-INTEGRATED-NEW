@@ -4,25 +4,20 @@ import {
   PhoneCall, 
   Clock, 
   Building2, 
-  ShieldCheck,
-  KeyRound,
-  LogOut
+  ShieldCheck
 } from 'lucide-react';
 
 interface HeaderProps {
   onOpenMenu: () => void;
   onScrollToSearch: () => void;
-  isAdmin: boolean;
-  onOpenLogin: () => void;
-  onLogout: () => void;
+  isAdmin?: boolean;
+  onOpenLogin?: () => void;
+  onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
   onOpenMenu, 
   onScrollToSearch,
-  isAdmin,
-  onOpenLogin,
-  onLogout
 }) => {
   // Simple check for Indonesian public office hours (WIB is UTC+7)
   const [currentWibTime, setCurrentWibTime] = React.useState<string>('');
@@ -131,16 +126,15 @@ export const Header: React.FC<HeaderProps> = ({
           />
           <div className="min-w-0 flex-1 overflow-hidden">
             <div className="flex items-center gap-1.5">
-              <h1 className="text-xs sm:text-base md:text-xl font-extrabold tracking-tight text-white truncate leading-tight">
+              <h1 className="text-sm sm:text-base md:text-xl font-extrabold tracking-tight text-white truncate leading-tight">
                 <span>SILAPAS</span><span className="text-amber-400">-INTEGRATED</span>
               </h1>
               <span className="bg-blue-900/60 text-blue-300 border border-blue-700/50 text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider hidden lg:inline-block shrink-0">
                 Hub Informasi
               </span>
             </div>
-            <p className="text-[9px] sm:text-xs text-slate-300 truncate leading-tight mt-0.5">
-              <span className="hidden sm:inline">Lapas Perempuan Kelas III Pangkal Pinang</span>
-              <span className="sm:hidden">LPP Pangkal Pinang</span>
+            <p className="text-[10px] sm:text-xs text-slate-300 truncate leading-tight mt-0.5 font-medium">
+              Lapas Perempuan Kelas III Pangkalpinang
             </p>
           </div>
         </div>
@@ -155,47 +149,18 @@ export const Header: React.FC<HeaderProps> = ({
             Cari Layanan
           </button>
 
-          {/* Call / Pengaduan Button (Compact on mobile so it never overlaps the title) */}
+          {/* Call / Pengaduan Button (Clean and compact, no overlap on mobile) */}
           <a
             href="https://wa.me/6281274346822?text=Halo%20Lapas%20Perempuan%20Pangkal%20Pinang,%20saya%20ingin%20memperoleh%20informasi%20layanan."
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow-sm shadow-emerald-700/30 transition-all hover:shadow shrink-0"
-            title="Layanan Panggilan & Pengaduan WhatsApp Lapas: 0812-7434-6822"
+            className="inline-flex items-center justify-center gap-1.5 p-2 sm:px-3.5 sm:py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-xs transition-all hover:shadow shrink-0"
+            title="Panggilan & Pengaduan WhatsApp Lapas: 0812-7434-6822"
             aria-label="Panggilan Pengaduan WhatsApp"
           >
             <PhoneCall className="w-3.5 h-3.5 shrink-0" />
             <span className="hidden sm:inline">Pengaduan</span>
           </a>
-
-          {/* Admin Login / Status Button */}
-          {!isAdmin ? (
-            <button
-              type="button"
-              onClick={onOpenLogin}
-              className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 active:bg-amber-500/30 border border-amber-500/30 hover:border-amber-400/60 rounded-lg transition-all shadow-xs shrink-0"
-              title="Masuk sebagai Administrator untuk mengedit tautan"
-            >
-              <KeyRound className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span>Login</span>
-            </button>
-          ) : (
-            <div className="inline-flex items-center gap-1 shrink-0">
-              <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 rounded-lg">
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-                <span>Admin</span>
-              </span>
-              <button
-                type="button"
-                onClick={onLogout}
-                className="inline-flex items-center gap-1 px-2 py-1.5 text-xs font-semibold text-rose-300 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 rounded-lg transition-all shadow-xs"
-                title="Keluar dari mode admin"
-              >
-                <LogOut className="w-3.5 h-3.5 text-rose-400" />
-                <span className="hidden sm:inline">Logout</span>
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </header>

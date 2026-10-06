@@ -1,14 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Environment variables for Supabase (can be configured in .env or Cloudflare Pages)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL || '').trim();
+const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY || '').trim();
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl && 
   supabaseAnonKey && 
   supabaseUrl.startsWith('https://') &&
-  supabaseUrl !== 'https://your-project.supabase.co'
+  !supabaseUrl.includes('your-project')
 );
 
 export const supabase = isSupabaseConfigured
@@ -67,9 +67,12 @@ export async function saveCustomLinkToCloud(
   serviceId: string, 
   url: string, 
   subTitle?: string
-): Promise<boolean> {
+): Promise<{ success: boolean; error?: string }> {
   if (!supabase || !isSupabaseConfigured) {
-    return false;
+    return { 
+      success: false, 
+      error: 'Supabase belum terhubung di website ini. Tautan hanya tersimpan di memori browser lokal perangkat ini.' 
+    };
   }
 
   try {
@@ -84,12 +87,19 @@ export async function saveCustomLinkToCloud(
 
     if (error) {
       console.error('Supabase upsert error:', error);
-      return false;
+      let userFriendly = error.message;
+      if (error.message.includes('relation') && error.message.includes('does not exist')) {
+        userFriendly = 'Tabel "custom_links" belum dibuat di Supabase. Silakan buat tabel melalui menu SQL Editor Supabase.';
+      } else if (error.message.includes('row-level security') || error.message.includes('policy')) {
+        userFriendly = 'Izin RLS Supabase memblokir penulisan. Tambahkan Policy atau matikan RLS pada tabel custom_links di Supabase.';
+      }
+      return { success: false, error: userFriendly };
     }
-    return true;
-  } catch (err) {
+    return { success: true };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Koneksi ke Supabase gagal';
     console.error('Failed to save to Supabase:', err);
-    return false;
+    return { success: false, error: msg };
   }
 }
 

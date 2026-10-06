@@ -172,16 +172,21 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                   <span>Profil Kantor</span>
                 </button>
 
-                {/* 2b. Profil Pejabat */}
+                {/* 2b. Peta Jabatan (Struktur Organisasi) */}
                 <button
                   onClick={() => {
                     onOpenOfficialsProfile();
                     onClose();
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-amber-300 hover:bg-white/10 transition-all text-left group"
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-amber-300 hover:bg-white/10 transition-all text-left group"
                 >
-                  <Users className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Profil Pejabat</span>
+                  <div className="flex items-center gap-2.5">
+                    <Users className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <span>Peta Jabatan (Struktur Organisasi)</span>
+                  </div>
+                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                    Bagan Resmi
+                  </span>
                 </button>
               </div>
             )}
@@ -314,7 +319,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                   <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
                   <div className="min-w-0">
                     <span className="text-xs font-bold text-white block truncate">Admin Aktif</span>
-                    <span className="text-[10px] text-slate-400 truncate block">lppkelasiiipkp@gmail.com</span>
+                    <span className="text-[10px] text-slate-400 truncate block">Pengelola Layanan SILAPAS</span>
                   </div>
                 </div>
                 <button

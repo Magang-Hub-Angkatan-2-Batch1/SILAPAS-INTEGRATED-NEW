@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { 
   X, 
   Lock, 
-  Mail, 
   Eye, 
   EyeOff, 
   ShieldCheck, 
@@ -22,7 +21,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   onClose,
   onLoginSuccess,
 }) => {
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -34,35 +32,26 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
     e.preventDefault();
     setErrorMsg('');
 
-    // Credentials specified by user:
-    // email : lppkelasiiipkp@gmail.com
-    // PW : lppkelas3pkp@#
-    const trimmedEmail = email.trim().toLowerCase();
-    const targetEmail = 'lppkelasiiipkp@gmail.com';
+    // Admin password check
     const targetPassword = 'lppkelas3pkp@#';
 
-    if (trimmedEmail === targetEmail && password === targetPassword) {
+    if (password.trim() === targetPassword) {
       setIsSuccess(true);
       setTimeout(() => {
         setIsSuccess(false);
         onLoginSuccess();
         onClose();
-      }, 700);
+        setPassword('');
+      }, 600);
     } else {
-      setErrorMsg('Email atau password salah. Silakan periksa kembali kredensial Anda.');
+      setErrorMsg('Kata sandi yang Anda masukkan salah. Silakan periksa kembali.');
     }
-  };
-
-  const handleQuickFill = () => {
-    setEmail('lppkelasiiipkp@gmail.com');
-    setPassword('lppkelas3pkp@#');
-    setErrorMsg('');
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-xs animate-fade-in">
       <div 
-        className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-6 animate-slide-in-left"
+        className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-6 animate-slide-in-left"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -91,11 +80,11 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-4 sm:p-6 space-y-4">
+        <div className="p-5 sm:p-6 space-y-4">
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-2.5 text-xs text-blue-900">
             <ShieldCheck className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
             <span>
-              Login khusus admin untuk mengedit tautan Google Drive pada <strong>Data Informasi Pegawai</strong> dan tautan <strong>Media Sosial Resmi</strong>.
+              Masukkan kata sandi pengelola untuk mengedit link <strong>Data Informasi Pegawai</strong> dan <strong>Media Sosial</strong>.
             </span>
           </div>
 
@@ -113,48 +102,29 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-3.5">
-            {/* Email Field */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Password Field Only - No Email */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Email Administrator
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Kata Sandi Administrator
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="lppkelasiiipkp@gmail.com"
-                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Kata Sandi (Password)
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
+                  autoFocus
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Masukkan kata sandi"
-                  className="w-full pl-9 pr-10 py-2 text-base sm:text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full pl-10 pr-10 py-2.5 text-base sm:text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
                   aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -168,21 +138,10 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               disabled={isSuccess}
               className="w-full py-2.5 px-4 bg-[#0F2C59] hover:bg-[#1E3E62] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 min-h-[44px]"
             >
-              <Lock className="w-4 h-4" />
+              <KeyRound className="w-4 h-4 text-amber-400" />
               <span>Masuk Sebagai Admin</span>
             </button>
           </form>
-
-          {/* Quick Auto-Fill Helper for convenience */}
-          <div className="pt-2 text-center border-t border-slate-100">
-            <button
-              type="button"
-              onClick={handleQuickFill}
-              className="text-[11px] text-blue-700 hover:text-blue-900 hover:underline font-semibold"
-            >
-              Gunakan Akun Resmi Pengelola (Isi Otomatis)
-            </button>
-          </div>
         </div>
       </div>
     </div>
