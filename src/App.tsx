@@ -79,6 +79,8 @@ export default function App() {
     }
     return KILAS_BALIK_DATA;
   });
+  // Track cloud loading state so initial placeholder images do not flash on refresh
+  const [isKilasBalikLoading, setIsKilasBalikLoading] = useState<boolean>(true);
   const [editingKilasBalik, setEditingKilasBalik] = useState<KilasBalikItem | null>(null);
   const [isEditKilasBalikOpen, setIsEditKilasBalikOpen] = useState(false);
 
@@ -110,37 +112,56 @@ export default function App() {
     let isMounted = true;
 
     async function loadCloudLinks() {
-      if (!isSupabaseConfigured) return;
-      const cloudLinks = await fetchCustomLinksFromCloud();
-      if (cloudLinks && isMounted) {
-        setServicesList((prev) =>
-          prev.map((item) => {
-            if (cloudLinks[item.id]) {
-              return {
-                ...item,
-                url: cloudLinks[item.id].url || item.url,
-                subTitle: cloudLinks[item.id].subTitle !== undefined ? cloudLinks[item.id].subTitle : item.subTitle,
-              };
+      try {
+        if (isSupabaseConfigured) {
+          const cloudLinks = await fetchCustomLinksFromCloud();
+          if (cloudLinks && isMounted) {
+            setServicesList((prev) =>
+              prev.map((item) => {
+                if (cloudLinks[item.id]) {
+                  return {
+                    ...item,
+                    url: cloudLinks[item.id].url || item.url,
+                    subTitle: cloudLinks[item.id].subTitle !== undefined ? cloudLinks[item.id].subTitle : item.subTitle,
+                  };
+                }
+                return item;
+              })
+            );
+            // Cache to localStorage
+            try {
+              localStorage.setItem('silapas_custom_links', JSON.stringify(cloudLinks));
+            } catch {
+              // ignore
             }
-            return item;
-          })
-        );
-        // Cache to localStorage
-        try {
-          localStorage.setItem('silapas_custom_links', JSON.stringify(cloudLinks));
-        } catch {
-          // ignore
-        }
-      }
+          }
 
-      // Sync Kilas Balik posts from Supabase cloud
-      const cloudPosts = await fetchKilasBalikFromCloud();
-      if (cloudPosts && isMounted && cloudPosts.length > 0) {
-        setKilasBalikList(cloudPosts);
-        try {
-          localStorage.setItem('silapas_kilas_balik', JSON.stringify(cloudPosts));
-        } catch {
-          // ignore
+          // Sync Kilas Balik posts from Supabase cloud
+          const cloudPosts = await fetchKilasBalikFromCloud();
+          if (cloudPosts && isMounted && cloudPosts.length > 0) {
+            setKilasBalikList((prev) => {
+              const cloudMap = new Map(cloudPosts.map((p) => [p.id, p]));
+              const merged = prev.map((item) => {
+                const cloudItem = cloudMap.get(item.id);
+                if (cloudItem) {
+                  return { ...cloudItem, isFromCloud: true };
+                }
+                return item;
+              });
+              try {
+                localStorage.setItem('silapas_kilas_balik', JSON.stringify(merged));
+              } catch {
+                // ignore
+              }
+              return merged;
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Error syncing cloud data:', err);
+      } finally {
+        if (isMounted) {
+          setIsKilasBalikLoading(false);
         }
       }
     }
@@ -536,6 +557,7 @@ export default function App() {
             <KilasBalik
               items={kilasBalikList}
               isAdmin={isAdmin}
+              isLoading={isKilasBalikLoading}
               onEditItem={handleOpenEditKilasBalik}
             />
           </div>

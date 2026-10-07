@@ -1,23 +1,130 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Camera, 
   ExternalLink, 
   Edit3, 
   Calendar, 
   Sparkles,
-  ArrowUpRight
+  ArrowUpRight,
+  Loader2,
+  ImageOff
 } from 'lucide-react';
 import { KilasBalikItem } from '../types';
 
 interface KilasBalikProps {
   items: KilasBalikItem[];
   isAdmin?: boolean;
+  isLoading?: boolean;
   onEditItem?: (item: KilasBalikItem) => void;
 }
+
+// Sub-component for individual card image with animated loading state
+const KilasBalikCardImage: React.FC<{
+  imageUrl: string;
+  title: string;
+  idx: number;
+  category: string;
+  date: string;
+  isParentLoading?: boolean;
+  isFromCloud?: boolean;
+}> = ({ imageUrl, title, idx, category, date, isParentLoading = false, isFromCloud = false }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  // When imageUrl changes (e.g. Supabase data resolves), reset loaded state
+  useEffect(() => {
+    setIsLoaded(false);
+    setHasError(false);
+  }, [imageUrl]);
+
+  const showLoadingPlaceholder = (!isLoaded || isParentLoading) && !hasError;
+
+  return (
+    <div className="relative w-full aspect-[4/5] overflow-hidden bg-slate-950 shrink-0 select-none">
+      {/* 1. Gambar / Animasi Loading State saat belum muncul dari Supabase */}
+      {showLoadingPlaceholder && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gradient-to-b from-[#070F2B] via-[#0B192C] to-[#1B1A55] p-4 text-center">
+          {/* Subtle animated background grid / glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(245,158,11,0.15),transparent_70%)] animate-pulse" />
+          
+          {/* Centered Camera & Rotating Loader Graphic */}
+          <div className="relative w-14 h-14 flex items-center justify-center mb-3">
+            <div className="absolute inset-0 rounded-full border-2 border-amber-400/20 border-t-amber-400 border-r-amber-400/60 animate-spin" />
+            <div className="w-10 h-10 rounded-full bg-slate-900/90 border border-amber-400/30 flex items-center justify-center shadow-lg shadow-amber-500/10">
+              <Camera className="w-5 h-5 text-amber-400 animate-pulse" />
+            </div>
+          </div>
+
+          {/* Loading Label */}
+          <div className="relative z-10 flex items-center justify-center gap-1.5 text-amber-300 font-bold text-xs tracking-wide">
+            <Loader2 className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+            <span>Memuat Foto dari Supabase...</span>
+          </div>
+
+          <span className="relative z-10 text-[10.5px] text-sky-200/80 mt-1 font-medium">
+            Mengambil data postingan terkini
+          </span>
+
+          {/* Animated loading bar at bottom of frame */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-800 overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-amber-500 via-amber-300 to-amber-500 animate-[shimmer_1.5s_infinite] w-full" />
+          </div>
+        </div>
+      )}
+
+      {/* 2. Error Fallback State if image link fails or not found */}
+      {hasError && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900 p-4 text-center text-slate-400">
+          <div className="p-3 rounded-2xl bg-slate-800 text-slate-500 mb-2">
+            <ImageOff className="w-6 h-6" />
+          </div>
+          <span className="text-xs font-bold text-slate-300">Foto Belum Tersedia</span>
+          <span className="text-[10px] text-slate-500 mt-0.5">Admin dapat mengunggah foto baru</span>
+        </div>
+      )}
+
+      {/* 3. Actual Image (Only rendered visibly when fully loaded from server/Supabase) */}
+      <img
+        src={imageUrl}
+        alt={title}
+        className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ${
+          isLoaded && !isParentLoading ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+        }`}
+        loading="lazy"
+        onLoad={() => setIsLoaded(true)}
+        onError={() => setHasError(true)}
+      />
+
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/25 pointer-events-none" />
+
+      {/* Number Badge (1 to 8) */}
+      <div className="absolute top-2.5 left-2.5 w-6 h-6 rounded-full bg-slate-950/80 backdrop-blur-xs text-white text-[11px] font-black flex items-center justify-center border border-white/20 shadow-xs z-20">
+        {idx + 1}
+      </div>
+
+      {/* Category Pill */}
+      <div className="absolute top-2.5 right-2.5 bg-blue-900/85 backdrop-blur-xs text-sky-200 text-[10px] font-bold px-2 py-0.5 rounded-md border border-blue-700/50 shadow-xs z-20">
+        {category}
+      </div>
+
+      {/* Aspect Ratio Tag */}
+      <div className="absolute bottom-2 right-2.5 bg-black/60 backdrop-blur-xs text-slate-300 text-[9px] font-mono px-1.5 py-0.5 rounded border border-white/10 z-20">
+        1080×1350
+      </div>
+
+      {/* Date Stamp */}
+      <div className="absolute bottom-2 left-2.5 flex items-center gap-1 bg-slate-950/75 backdrop-blur-xs text-slate-200 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-white/10 z-20">
+        <Calendar className="w-3 h-3 text-amber-400 shrink-0" />
+        <span className="truncate max-w-[150px]">{date}</span>
+      </div>
+    </div>
+  );
+};
 
 export const KilasBalik: React.FC<KilasBalikProps> = ({
   items,
   isAdmin = false,
+  isLoading = false,
   onEditItem,
 }) => {
   return (
@@ -42,9 +149,16 @@ export const KilasBalik: React.FC<KilasBalikProps> = ({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs font-bold text-slate-700 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
-            {items.length} Postingan Terpilih
-          </span>
+          {isLoading ? (
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 shadow-2xs animate-pulse">
+              <Loader2 className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+              <span>Memuat dari Supabase...</span>
+            </span>
+          ) : (
+            <span className="text-xs font-bold text-slate-700 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+              {items.length} Postingan Terpilih
+            </span>
+          )}
           <a
             href="https://www.instagram.com/lapasperempuanpangkalpinang?stkn=eGFlZno1ZWoxcTg2"
             target="_blank"
@@ -64,41 +178,16 @@ export const KilasBalik: React.FC<KilasBalikProps> = ({
             key={item.id}
             className="group relative flex flex-col justify-between bg-white rounded-2xl border border-slate-200 shadow-xs hover:border-blue-300 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
           >
-            {/* Top Image Banner - Rasio Portrait 1080 x 1350 (4:5) */}
-            <div className="relative w-full aspect-[4/5] overflow-hidden bg-slate-900 shrink-0">
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                loading="lazy"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80';
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/25 pointer-events-none" />
-
-              {/* Number Badge (1 to 8) */}
-              <div className="absolute top-2.5 left-2.5 w-6 h-6 rounded-full bg-slate-950/80 backdrop-blur-xs text-white text-[11px] font-black flex items-center justify-center border border-white/20 shadow-xs">
-                {idx + 1}
-              </div>
-
-              {/* Category Pill */}
-              <div className="absolute top-2.5 right-2.5 bg-blue-900/85 backdrop-blur-xs text-sky-200 text-[10px] font-bold px-2 py-0.5 rounded-md border border-blue-700/50 shadow-xs">
-                {item.category}
-              </div>
-
-              {/* Aspect Ratio Tag */}
-              <div className="absolute bottom-2 right-2.5 bg-black/60 backdrop-blur-xs text-slate-300 text-[9px] font-mono px-1.5 py-0.5 rounded border border-white/10">
-                1080×1350
-              </div>
-
-              {/* Date Stamp */}
-              <div className="absolute bottom-2 left-2.5 flex items-center gap-1 bg-slate-950/75 backdrop-blur-xs text-slate-200 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-white/10">
-                <Calendar className="w-3 h-3 text-amber-400 shrink-0" />
-                <span className="truncate max-w-[150px]">{item.date}</span>
-              </div>
-            </div>
+            {/* Top Image Banner - 1080x1350 with Loading State */}
+            <KilasBalikCardImage
+              imageUrl={item.imageUrl}
+              title={item.title}
+              idx={idx}
+              category={item.category}
+              date={item.date}
+              isParentLoading={isLoading}
+              isFromCloud={item.isFromCloud}
+            />
 
             {/* Card Body */}
             <div className="p-4 flex-1 flex flex-col justify-between">

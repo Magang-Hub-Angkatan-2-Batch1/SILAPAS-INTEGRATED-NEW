@@ -32,4 +32,5 @@ export interface KilasBalikItem {
   description: string;
   imageUrl: string;
   linkUrl?: string;
+  isFromCloud?: boolean;
 }

@@ -59,8 +59,8 @@ export const EditKilasBalikModal: React.FC<EditKilasBalikModalProps> = ({
 
   if (!isOpen || !item) return null;
 
-  // Handle local file upload with Base64 conversion
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle local file upload with auto-resizing & compression (optimized for 1080x1350)
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setFileError(null);
     const file = e.target.files?.[0];
     if (!file) return;
@@ -70,22 +70,55 @@ export const EditKilasBalikModal: React.FC<EditKilasBalikModalProps> = ({
       return;
     }
 
-    // Limit to ~5MB to avoid huge storage
-    if (file.size > 5 * 1024 * 1024) {
-      setFileError('Ukuran gambar terlalu besar (maksimal 5MB). Silakan kompres atau pilih gambar lain.');
-      return;
-    }
+    try {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const rawResult = event.target?.result as string;
+        if (!rawResult) {
+          setFileError('Gagal membaca gambar.');
+          return;
+        }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setImageUrl(reader.result);
-      }
-    };
-    reader.onerror = () => {
-      setFileError('Gagal membaca file gambar.');
-    };
-    reader.readAsDataURL(file);
+        const img = new Image();
+        img.onload = () => {
+          // Resize to max 1080x1350 portrait ratio while preserving aspect ratio
+          const maxWidth = 1080;
+          const maxHeight = 1350;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth || height > maxHeight) {
+            const ratio = Math.min(maxWidth / width, maxHeight / height);
+            width = Math.round(width * ratio);
+            height = Math.round(height * ratio);
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            setImageUrl(rawResult);
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+          // Compress to JPEG 85% - light weight (<200KB), super sharp, fast cloud sync
+          const compressed = canvas.toDataURL('image/jpeg', 0.85);
+          setImageUrl(compressed);
+        };
+        img.onerror = () => {
+          setImageUrl(rawResult);
+        };
+        img.src = rawResult;
+      };
+      reader.onerror = () => {
+        setFileError('Gagal membaca file gambar.');
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      setFileError('Terjadi kesalahan saat memproses gambar.');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

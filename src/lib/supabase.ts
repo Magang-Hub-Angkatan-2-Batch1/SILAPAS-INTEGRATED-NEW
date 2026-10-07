@@ -1,19 +1,40 @@
 import { createClient } from '@supabase/supabase-js';
 import { KilasBalikItem } from '../types';
+import { KILAS_BALIK_DATA } from '../data/kilasBalik';
 
-// Environment variables for Supabase (can be configured in .env or Cloudflare Pages)
-const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL || '').trim();
-const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY || '').trim();
+function getCredentials() {
+  const envUrl = (import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL || '').trim();
+  const envKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY || '').trim();
 
-export const isSupabaseConfigured = Boolean(
-  supabaseUrl && 
-  supabaseAnonKey && 
-  supabaseUrl.startsWith('https://') &&
-  !supabaseUrl.includes('your-project')
-);
+  let localUrl = '';
+  let localKey = '';
+  if (typeof window !== 'undefined') {
+    try {
+      localUrl = (localStorage.getItem('silapas_supabase_url') || '').trim();
+      localKey = (localStorage.getItem('silapas_supabase_anon_key') || '').trim();
+    } catch {
+      // ignore
+    }
+  }
 
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  const url = envUrl || localUrl;
+  const key = envKey || localKey;
+
+  const isConfigured = Boolean(
+    url &&
+    key &&
+    url.startsWith('https://') &&
+    !url.includes('your-project')
+  );
+
+  return { url, key, isConfigured };
+}
+
+const creds = getCredentials();
+export const isSupabaseConfigured = creds.isConfigured;
+
+export const supabase = creds.isConfigured
+  ? createClient(creds.url, creds.key)
   : null;
 
 export interface DbCustomLink {
@@ -159,16 +180,37 @@ export async function fetchKilasBalikFromCloud(): Promise<KilasBalikItem[] | nul
       return null;
     }
 
-    if (data && Array.isArray(data) && data.length > 0) {
-      return data.map((row: DbKilasBalik) => ({
-        id: row.id,
-        title: row.title,
-        date: row.date,
-        category: row.category,
-        description: row.description,
-        imageUrl: row.image_url,
-        linkUrl: row.link_url || undefined,
-      }));
+    if (data && Array.isArray(data)) {
+      if (data.length > 0) {
+        return data.map((row: DbKilasBalik) => ({
+          id: row.id,
+          title: row.title,
+          date: row.date,
+          category: row.category,
+          description: row.description,
+          imageUrl: row.image_url,
+          linkUrl: row.link_url || undefined,
+          isFromCloud: true,
+        }));
+      } else {
+        // Table exists in Supabase but has 0 rows. Auto-seed with default posts
+        try {
+          const seedPayload = KILAS_BALIK_DATA.map((item) => ({
+            id: item.id,
+            title: item.title,
+            date: item.date,
+            category: item.category,
+            description: item.description,
+            image_url: item.imageUrl,
+            link_url: item.linkUrl || null,
+            updated_at: new Date().toISOString(),
+          }));
+          await supabase.from('kilas_balik').insert(seedPayload);
+          return KILAS_BALIK_DATA.map((item) => ({ ...item, isFromCloud: true }));
+        } catch (seedErr) {
+          console.warn('Auto-seed kilas_balik failed:', seedErr);
+        }
+      }
     }
   } catch (err) {
     console.warn('Failed to query Supabase kilas_balik:', err);
