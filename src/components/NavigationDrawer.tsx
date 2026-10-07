@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { 
   X, 
   Home, 
@@ -9,13 +9,9 @@ import {
   HardDrive,
   Share2, 
   HelpCircle,
-  ChevronDown, 
-  ChevronRight, 
   PhoneCall, 
   ShieldCheck,
-  Landmark,
   KeyRound,
-  LogOut,
   Camera
 } from 'lucide-react';
 
@@ -52,9 +48,6 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onOpenLogin,
   onLogout,
 }) => {
-  // Profil submenu state (expanded by default so user sees Profil Kantor & Profil Pejabat)
-  const [isProfileOpen, setIsProfileOpen] = useState(true);
-
   // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -89,295 +82,193 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
         aria-hidden="true"
       />
 
-      {/* Drawer Panel - Glassmorphism Transparent & Blur */}
+      {/* Drawer Panel - Clean, Minimalist & Spacious */}
       <div 
-        className="relative w-80 max-w-[85vw] bg-slate-900/80 backdrop-blur-2xl text-white shadow-2xl flex flex-col z-50 border-r border-white/15 animate-slide-in-left h-full overflow-hidden"
+        className="relative w-72 max-w-[80vw] bg-[#0B192C]/95 backdrop-blur-xl text-white shadow-2xl flex flex-col z-50 border-r border-slate-700/60 animate-slide-in-left h-full overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Drawer Header */}
-        <div className="p-4 sm:p-5 bg-slate-950/60 backdrop-blur-md border-b border-white/10 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
+        {/* Drawer Header - Simple & Compact */}
+        <div className="p-4 border-b border-slate-800 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2.5">
             <img 
               src="/logo.jpg" 
               alt="Logo Lapas Perempuan Kelas III Pangkal Pinang"
-              className="w-10 h-10 rounded-full border-2 border-amber-400 object-cover shadow-sm shrink-0" 
+              className="w-8 h-8 rounded-full border border-amber-400 object-cover shadow-xs shrink-0" 
             />
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-base font-extrabold tracking-tight text-white">
-                  SILAPAS<span className="text-amber-400">-INTEGRATED</span>
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-300 line-clamp-1">
-                LPP Kelas III Pangkal Pinang
-              </p>
+              <span className="text-sm font-extrabold tracking-tight text-white block leading-tight">
+                SILAPAS<span className="text-amber-400">-INTEGRATED</span>
+              </span>
+              <span className="text-[10px] text-slate-400 block leading-tight">
+                LPP Kelas III Pangkalpinang
+              </span>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+            className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
             aria-label="Tutup Menu"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Navigation Items List */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-2 text-sm">
+        {/* Navigation Items - Clean Single List */}
+        <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-1 text-xs sm:text-sm">
           {/* 1. Beranda */}
           <button
             onClick={() => {
               onNavigateHome();
               onClose();
             }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors text-left font-medium"
           >
-            <div className="p-1.5 rounded-lg bg-blue-500/20 text-sky-400 group-hover:bg-blue-500/30 transition-colors">
-              <Home className="w-4 h-4" />
-            </div>
-            <span className="flex-1">Beranda</span>
+            <Home className="w-4 h-4 text-sky-400 shrink-0" />
+            <span>Beranda</span>
           </button>
 
-          {/* 2. Profil (Collapsible / Submenu) */}
-          <div className="rounded-xl overflow-hidden bg-white/[0.04] border border-white/10 backdrop-blur-xs">
-            <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="w-full flex items-center justify-between px-3.5 py-2.5 font-bold text-slate-200 hover:text-white hover:bg-white/[0.08] transition-all text-left group"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 group-hover:bg-amber-500/30 transition-colors">
-                  <Landmark className="w-4 h-4" />
-                </div>
-                <span>Profil</span>
-              </div>
-              <div className="text-slate-400 group-hover:text-white transition-transform">
-                {isProfileOpen ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronRight className="w-4 h-4" />
-                )}
-              </div>
-            </button>
-
-            {/* Submenu Items */}
-            {isProfileOpen && (
-              <div className="pl-4 pr-2 pb-2 pt-1 space-y-1 border-t border-white/10 bg-black/25">
-                {/* 2a. Profil Kantor */}
-                <button
-                  onClick={() => {
-                    onOpenOfficeProfile();
-                    onClose();
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-amber-300 hover:bg-white/10 transition-all text-left group"
-                >
-                  <Building2 className="w-3.5 h-3.5 text-sky-400 group-hover:text-amber-400 shrink-0" />
-                  <span>Profil Kantor</span>
-                </button>
-
-                {/* 2b. Peta Jabatan (Struktur Organisasi) */}
-                <button
-                  onClick={() => {
-                    onOpenOfficialsProfile();
-                    onClose();
-                  }}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-amber-300 hover:bg-white/10 transition-all text-left group"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Users className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                    <span>Peta Jabatan (Struktur Organisasi)</span>
-                  </div>
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                    Bagan Resmi
-                  </span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* 3. SI-BMN */}
-          <button
-            onClick={() => {
-              onOpenBmn();
-              onClose();
-            }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
-          >
-            <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:bg-emerald-500/30 transition-colors">
-              <PackageSearch className="w-4 h-4" />
-            </div>
-            <div className="flex-1 flex items-center justify-between">
-              <span>SI-BMN</span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40">
-                Persediaan
-              </span>
-            </div>
-          </button>
-
-          {/* 4. JHP (Jurnal Harian Pegawai) */}
-          <button
-            onClick={() => {
-              onOpenJhp();
-              onClose();
-            }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
-          >
-            <div className="p-1.5 rounded-lg bg-blue-500/20 text-sky-400 group-hover:bg-blue-500/30 transition-colors">
-              <FileText className="w-4 h-4" />
-            </div>
-            <div className="flex-1 flex items-center justify-between">
-              <span>JHP (Jurnal Harian Pegawai)</span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/25 text-sky-300 border border-blue-500/40">
-                SDM
-              </span>
-            </div>
-          </button>
-
-          {/* 5. Data Informasi Pegawai */}
-          <button
-            onClick={() => {
-              onOpenPegawai();
-              onClose();
-            }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
-          >
-            <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:bg-emerald-500/30 transition-colors">
-              <HardDrive className="w-4 h-4" />
-            </div>
-            <div className="flex-1 flex items-center justify-between">
-              <span>Data Informasi Pegawai</span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/40">
-                Google Drive
-              </span>
-            </div>
-          </button>
-
-          {/* 6. Sosial Media */}
-          <button
-            onClick={() => {
-              onNavigateSosmed();
-              onClose();
-            }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
-          >
-            <div className="p-1.5 rounded-lg bg-pink-500/20 text-pink-400 group-hover:bg-pink-500/30 transition-colors">
-              <Share2 className="w-4 h-4" />
-            </div>
-            <div className="flex-1 flex items-center justify-between">
-              <span>Sosial Media</span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-pink-500/25 text-pink-300 border border-pink-500/40">
-                Resmi
-              </span>
-            </div>
-          </button>
-
-          {/* 7. Kilas Balik Kegiatan 1 Bulan */}
+          {/* 2. Kilas Balik */}
           <button
             onClick={() => {
               onNavigateKilasBalik?.();
               onClose();
             }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors text-left font-medium"
           >
-            <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 group-hover:bg-amber-500/30 transition-colors">
-              <Camera className="w-4 h-4" />
-            </div>
-            <div className="flex-1 flex items-center justify-between">
-              <span>Kilas Balik Kegiatan</span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/25 text-amber-300 border border-amber-500/40">
-                1 Bulan
-              </span>
-            </div>
+            <Camera className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>Kilas Balik Kegiatan</span>
           </button>
 
-          {/* 8. FAQ (Dipaling Bawah Sesuai Permintaan) */}
-          <div className="pt-2">
+          {/* 3. Profil Kantor */}
+          <button
+            onClick={() => {
+              onOpenOfficeProfile();
+              onClose();
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors text-left font-medium"
+          >
+            <Building2 className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>Profil Kantor</span>
+          </button>
+
+          {/* 4. Peta Jabatan */}
+          <button
+            onClick={() => {
+              onOpenOfficialsProfile();
+              onClose();
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors text-left font-medium"
+          >
+            <Users className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Peta Jabatan Organisasi</span>
+          </button>
+
+          <div className="my-2 border-t border-slate-800/80" />
+
+          {/* 5. SI-BMN */}
+          <button
+            onClick={() => {
+              onOpenBmn();
+              onClose();
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors text-left font-medium"
+          >
+            <PackageSearch className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>SI-BMN (Persediaan)</span>
+          </button>
+
+          {/* 6. JHP */}
+          <button
+            onClick={() => {
+              onOpenJhp();
+              onClose();
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors text-left font-medium"
+          >
+            <FileText className="w-4 h-4 text-sky-400 shrink-0" />
+            <span>JHP (Jurnal Harian)</span>
+          </button>
+
+          {/* 7. Data Pegawai */}
+          <button
+            onClick={() => {
+              onOpenPegawai();
+              onClose();
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors text-left font-medium"
+          >
+            <HardDrive className="w-4 h-4 text-teal-400 shrink-0" />
+            <span>Data Pegawai (GDrive)</span>
+          </button>
+
+          <div className="my-2 border-t border-slate-800/80" />
+
+          {/* 8. Media Sosial */}
+          <button
+            onClick={() => {
+              onNavigateSosmed();
+              onClose();
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors text-left font-medium"
+          >
+            <Share2 className="w-4 h-4 text-pink-400 shrink-0" />
+            <span>Media Sosial Resmi</span>
+          </button>
+
+          {/* 9. FAQ */}
+          <button
+            onClick={() => {
+              onOpenFaq();
+              onClose();
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors text-left font-medium"
+          >
+            <HelpCircle className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>FAQ &amp; Bantuan</span>
+          </button>
+        </nav>
+
+        {/* Drawer Footer - Clean & Uncluttered */}
+        <div className="p-3 border-t border-slate-800 space-y-2 shrink-0 bg-slate-950/50">
+          {!isAdmin ? (
             <button
+              type="button"
               onClick={() => {
-                onOpenFaq();
+                onOpenLogin?.();
                 onClose();
               }}
-              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-amber-300 hover:text-white bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/35 transition-all text-left group backdrop-blur-xs"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-amber-300 hover:bg-amber-400/10 transition-colors cursor-pointer"
             >
-              <div className="p-1.5 rounded-lg bg-amber-400/25 text-amber-300 group-hover:bg-amber-400/40 transition-colors">
-                <HelpCircle className="w-4 h-4" />
+              <div className="flex items-center gap-2">
+                <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+                <span>Login Admin</span>
               </div>
-              <div className="flex-1 flex items-center justify-between">
-                <span>FAQ Inovasi</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400 text-slate-950">
-                  Magang Hub
-                </span>
-              </div>
+              <span className="text-[10px] text-amber-400/80">&rarr;</span>
             </button>
-          </div>
-
-          {/* 8. Mobile Admin Login / Status Row */}
-          <div className="pt-2 border-t border-white/10">
-            {!isAdmin ? (
+          ) : (
+            <div className="px-2.5 py-1.5 rounded-lg bg-amber-500/10 border border-amber-400/30 flex items-center justify-between gap-2">
+              <span className="text-[11px] font-bold text-amber-300">Admin Aktif</span>
               <button
                 type="button"
                 onClick={() => {
-                  onOpenLogin?.();
+                  onLogout?.();
                   onClose();
                 }}
-                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all text-left"
+                className="text-[11px] font-bold text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
               >
-                <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 rounded-lg bg-amber-400/20 text-amber-400">
-                    <KeyRound className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="block text-white">Login Admin</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Akses edit tautan</span>
-                  </div>
-                </div>
-                <span className="text-[10px] text-amber-400 font-semibold px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">
-                  Masuk &rarr;
-                </span>
+                Logout
               </button>
-            ) : (
-              <div className="p-3 rounded-xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
-                  <div className="min-w-0">
-                    <span className="text-xs font-bold text-white block truncate">Admin Aktif</span>
-                    <span className="text-[10px] text-slate-400 truncate block">Pengelola Layanan SILAPAS</span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onLogout?.();
-                    onClose();
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/40 text-xs font-bold transition-colors shrink-0"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-        </nav>
-
-        {/* Drawer Footer Information */}
-        <div className="p-4 bg-slate-950/60 backdrop-blur-md border-t border-white/10 space-y-3 shrink-0">
-          <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-[11px] text-slate-400 space-y-1">
-            <div className="flex items-center gap-1.5 font-bold text-amber-400">
-              <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-              <span>Sistem Terintegrasi Lapas</span>
             </div>
-            <p className="leading-tight">
-              Kementerian Imigrasi &amp; Pemasyarakatan RI &bull; Kanwil Kep. Bangka Belitung
-            </p>
-          </div>
+          )}
 
           <a
             href="https://wa.me/6281274346822?text=Halo%20Humas%20Lapas%20Perempuan%20Kelas%20III%20Pangkalpinang"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition-colors"
+            className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
           >
-            <PhoneCall className="w-3.5 h-3.5" />
+            <PhoneCall className="w-3 h-3" />
             <span>Pengaduan: 0812-7434-6822</span>
           </a>
         </div>

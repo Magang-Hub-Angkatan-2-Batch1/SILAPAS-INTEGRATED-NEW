@@ -240,14 +240,14 @@ export const EditKilasBalikModal: React.FC<EditKilasBalikModalProps> = ({
             </div>
           )}
 
-          {/* Live Preview Box - 1080 x 1350 (4:5) Portrait Ratio */}
+          {/* Live Preview Box */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold text-slate-700">
                 Pratinjau Foto Kegiatan:
               </label>
-              <span className="text-[10px] font-mono font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                Rasio Portrait: 1080 × 1350 (4:5)
+              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                Format Portrait
               </span>
             </div>
             <div className="relative w-full max-w-[220px] mx-auto aspect-[4/5] rounded-xl overflow-hidden border-2 border-slate-300 bg-slate-900 shadow-md flex items-center justify-center group">
@@ -269,9 +269,6 @@ export const EditKilasBalikModal: React.FC<EditKilasBalikModalProps> = ({
               )}
               <div className="absolute top-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-white/20">
                 {category || 'Kategori'}
-              </div>
-              <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-xs text-white text-[9px] font-mono px-1.5 py-0.5 rounded border border-white/20">
-                1080×1350
               </div>
             </div>
           </div>

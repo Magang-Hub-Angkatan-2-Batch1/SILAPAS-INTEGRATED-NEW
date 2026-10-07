@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Users, 
@@ -6,21 +6,46 @@ import {
   Briefcase, 
   Building, 
   CheckCircle,
-  Quote
+  Quote,
+  Edit3,
+  ShieldCheck
 } from 'lucide-react';
-import { PetaJabatanView } from './PetaJabatanView';
+import { PetaJabatanView, DEFAULT_PETA_JABATAN, PetaJabatanData } from './PetaJabatanView';
 
 interface OfficialsProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isAdmin?: boolean;
 }
 
 export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
   isOpen,
   onClose,
+  isAdmin = false,
 }) => {
   // Default to Peta Jabatan (Bagan Struktur Organisasi) as requested in Gambar 2
   const [selectedSection, setSelectedSection] = useState<'struktur' | 'struktural' | 'kepala'>('struktur');
+  const [petaData, setPetaData] = useState<PetaJabatanData>(() => {
+    try {
+      const stored = localStorage.getItem('silapas_peta_jabatan');
+      if (stored) return JSON.parse(stored);
+    } catch {
+      // fallback
+    }
+    return DEFAULT_PETA_JABATAN;
+  });
+
+  // Re-read from storage when opened
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        const stored = localStorage.getItem('silapas_peta_jabatan');
+        if (stored) setPetaData(JSON.parse(stored));
+      } catch {
+        // ignore
+      }
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -59,6 +84,24 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Admin Notification Bar */}
+        {isAdmin && (
+          <div className="bg-amber-500/10 border-b border-amber-300/40 px-4 sm:px-6 py-2 flex items-center justify-between gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
+              <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0" />
+              <span>Mode Pengelola: Anda memiliki akses mengedit nama &amp; NIP Pejabat Peta Jabatan.</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedSection('struktur')}
+              className="px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-xs cursor-pointer shrink-0"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>Buka Formulir Edit</span>
+            </button>
+          </div>
+        )}
 
         {/* Tab Switcher */}
         <div className="bg-slate-100 px-4 sm:px-6 py-2.5 border-b border-slate-200 flex gap-2 shrink-0 overflow-x-auto scrollbar-none">
@@ -104,7 +147,7 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
           {/* TAB 1: PETA JABATAN (STRUKTUR ORGANISASI) MATCHING GAMBAR 2 */}
           {selectedSection === 'struktur' && (
             <div className="space-y-4">
-              <PetaJabatanView />
+              <PetaJabatanView isAdmin={isAdmin} onUpdate={setPetaData} />
             </div>
           )}
           {/* TAB 1: KEPALA LAPAS */}
@@ -134,11 +177,11 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
                     <div className="inline-block px-2.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[10px] sm:text-xs font-bold tracking-wide">
                       KEPALA LEMBAGA PEMASYARAKATAN
                     </div>
-                    <h4 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                      Rina Setiari
+                    <h4 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase">
+                      {petaData.kepalaLapas.name}
                     </h4>
                     <p className="text-xs font-mono text-amber-300">
-                      NIP. 19830410 200312 2 001
+                      NIP. {petaData.kepalaLapas.nip}
                     </p>
                     <p className="text-xs sm:text-sm text-sky-200">
                       Kepala Lapas Perempuan Kelas III Pangkal Pinang
@@ -189,10 +232,10 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
                       TU
                     </div>
                     <div>
-                      <h5 className="text-sm font-bold text-slate-900">
-                        Evi Aswani
+                      <h5 className="text-sm font-bold text-slate-900 uppercase">
+                        {petaData.kaurTu.name}
                       </h5>
-                      <div className="text-[10px] font-mono text-slate-500">NIP. 19840408 200501 2 001</div>
+                      <div className="text-[10px] font-mono text-slate-500">NIP. {petaData.kaurTu.nip}</div>
                       <span className="text-[11px] text-blue-700 font-semibold">Kaur Tata Usaha (Kaur TU)</span>
                     </div>
                   </div>
@@ -208,10 +251,10 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
                       AO
                     </div>
                     <div>
-                      <h5 className="text-sm font-bold text-slate-900">
-                        Ayu Annisa Pember
+                      <h5 className="text-sm font-bold text-slate-900 uppercase">
+                        {petaData.subseksi[0]?.name}
                       </h5>
-                      <div className="text-[10px] font-mono text-slate-500">NIP. 19911115 201012 2 002</div>
+                      <div className="text-[10px] font-mono text-slate-500">NIP. {petaData.subseksi[0]?.nip}</div>
                       <span className="text-[11px] text-amber-700 font-semibold">Kepala Subseksi Admisi &amp; Orientasi</span>
                     </div>
                   </div>
@@ -227,10 +270,10 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
                       BIN
                     </div>
                     <div>
-                      <h5 className="text-sm font-bold text-slate-900">
-                        Mia Cahyani
+                      <h5 className="text-sm font-bold text-slate-900 uppercase">
+                        {petaData.subseksi[1]?.name}
                       </h5>
-                      <div className="text-[10px] font-mono text-slate-500">NIP. 19830724 200801 2 001</div>
+                      <div className="text-[10px] font-mono text-slate-500">NIP. {petaData.subseksi[1]?.nip}</div>
                       <span className="text-[11px] text-emerald-700 font-semibold">Kepala Subseksi Pembinaan</span>
                     </div>
                   </div>
@@ -246,10 +289,10 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
                       KAMTIB
                     </div>
                     <div>
-                      <h5 className="text-sm font-bold text-slate-900">
-                        Yistarati
+                      <h5 className="text-sm font-bold text-slate-900 uppercase">
+                        {petaData.subseksi[2]?.name}
                       </h5>
-                      <div className="text-[10px] font-mono text-slate-500">NIP. 19800517 200501 2 002</div>
+                      <div className="text-[10px] font-mono text-slate-500">NIP. {petaData.subseksi[2]?.nip}</div>
                       <span className="text-[11px] text-rose-700 font-semibold">Kepala Subseksi Keamanan &amp; Ketertiban</span>
                     </div>
                   </div>

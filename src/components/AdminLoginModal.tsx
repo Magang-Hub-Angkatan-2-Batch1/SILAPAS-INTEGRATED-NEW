@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { 
   X, 
   Lock, 
+  Mail,
   Eye, 
   EyeOff, 
   ShieldCheck, 
@@ -21,6 +22,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   onClose,
   onLoginSuccess,
 }) => {
+  const [email, setEmail] = useState('lppkelasiiipkp@gmail.com');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -31,6 +33,11 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
+
+    if (!email.trim() || !email.includes('@')) {
+      setErrorMsg('Silakan masukkan alamat email administrator yang valid.');
+      return;
+    }
 
     // Admin password check
     const targetPassword = 'lppkelas3pkp@#';
@@ -65,7 +72,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                 <span>LOGIN ADMINISTRATOR</span>
               </h3>
               <p className="text-[11px] text-sky-200">
-                Pengelolaan Tautan Layanan SILAPAS
+                Pengelolaan Portal SILAPAS-INTEGRATED
               </p>
             </div>
           </div>
@@ -84,7 +91,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-2.5 text-xs text-blue-900">
             <ShieldCheck className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
             <span>
-              Masukkan kata sandi pengelola untuk mengedit link <strong>Data Informasi Pegawai</strong> dan <strong>Media Sosial</strong>.
+              Masukkan email dan kata sandi pengelola resmi untuk mengedit data SILAPAS.
             </span>
           </div>
 
@@ -102,8 +109,28 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Password Field Only - No Email */}
+          <form onSubmit={handleSubmit} className="space-y-3.5">
+            {/* Email Field */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Email Administrator
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="lppkelasiiipkp@gmail.com"
+                  className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-sans"
+                />
+              </div>
+            </div>
+
+            {/* Password Field */}
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Kata Sandi Administrator
@@ -119,12 +146,12 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Masukkan kata sandi"
-                  className="w-full pl-10 pr-10 py-2.5 text-base sm:text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-mono"
+                  className="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                   aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -136,7 +163,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
             <button
               type="submit"
               disabled={isSuccess}
-              className="w-full py-2.5 px-4 bg-[#0F2C59] hover:bg-[#1E3E62] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 min-h-[44px]"
+              className="w-full py-2.5 px-4 bg-[#0F2C59] hover:bg-[#1E3E62] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 min-h-[44px] cursor-pointer mt-1"
             >
               <KeyRound className="w-4 h-4 text-amber-400" />
               <span>Masuk Sebagai Admin</span>

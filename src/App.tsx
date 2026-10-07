@@ -656,11 +656,13 @@ export default function App() {
       <OfficeProfileModal
         isOpen={isOfficeModalOpen}
         onClose={() => setIsOfficeModalOpen(false)}
+        isAdmin={isAdmin}
       />
 
       <OfficialsProfileModal
         isOpen={isOfficialsModalOpen}
         onClose={() => setIsOfficialsModalOpen(false)}
+        isAdmin={isAdmin}
       />
 
       <FaqModal

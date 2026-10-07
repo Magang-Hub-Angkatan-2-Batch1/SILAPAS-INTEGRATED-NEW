@@ -1,7 +1,7 @@
-import React from 'react';
-import { ShieldCheck, Award } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShieldCheck, Award, Edit3, Save, RotateCcw, Check } from 'lucide-react';
 
-interface OfficerData {
+export interface OfficerData {
   title: string;
   name: string;
   nip: string;
@@ -9,46 +9,52 @@ interface OfficerData {
   color: string;
 }
 
+export interface PetaJabatanData {
+  kepalaLapas: OfficerData;
+  kaurTu: OfficerData;
+  subseksi: OfficerData[];
+}
+
 // Data exactly matching Gambar 2 (Struktur Organisasi Lapas Perempuan Kelas III Pangkalpinang)
-const KEPALA_LAPAS: OfficerData = {
-  title: 'KEPALA LAPAS',
-  name: 'RINA SETIARI',
-  nip: '198304102003122001',
-  initials: 'RS',
-  color: 'from-amber-400 to-amber-600',
+export const DEFAULT_PETA_JABATAN: PetaJabatanData = {
+  kepalaLapas: {
+    title: 'KEPALA LAPAS',
+    name: 'RINA SETIARI',
+    nip: '198304102003122001',
+    initials: 'RS',
+    color: 'from-amber-400 to-amber-600',
+  },
+  kaurTu: {
+    title: 'KAUR TU',
+    name: 'EVI ASWANI',
+    nip: '198404082005012001',
+    initials: 'EA',
+    color: 'from-blue-500 to-blue-700',
+  },
+  subseksi: [
+    {
+      title: 'KEPALA SUBSEKSI ADMISI & ORIENTASI',
+      name: 'AYU ANNISA PEMBER',
+      nip: '199111152010122002',
+      initials: 'AP',
+      color: 'from-emerald-500 to-emerald-700',
+    },
+    {
+      title: 'KEPALA SUBSEKSI PEMBINAAN',
+      name: 'MIA CAHYANI',
+      nip: '198307242008012001',
+      initials: 'MC',
+      color: 'from-indigo-500 to-indigo-700',
+    },
+    {
+      title: 'KEPALA SUBSEKSI KEAMANAN & KETERTIBAN',
+      name: 'YISTARATI',
+      nip: '198005172005012002',
+      initials: 'YS',
+      color: 'from-rose-500 to-rose-700',
+    },
+  ],
 };
-
-const KAUR_TU: OfficerData = {
-  title: 'KAUR TU',
-  name: 'EVI ASWANI',
-  nip: '198404082005012001',
-  initials: 'EA',
-  color: 'from-blue-500 to-blue-700',
-};
-
-const SUBSEKSI_LIST: OfficerData[] = [
-  {
-    title: 'KEPALA SUBSEKSI ADMISI & ORIENTASI',
-    name: 'AYU ANNISA PEMBER',
-    nip: '199111152010122002',
-    initials: 'AP',
-    color: 'from-emerald-500 to-emerald-700',
-  },
-  {
-    title: 'KEPALA SUBSEKSI PEMBINAAN',
-    name: 'MIA CAHYANI',
-    nip: '198307242008012001',
-    initials: 'MC',
-    color: 'from-indigo-500 to-indigo-700',
-  },
-  {
-    title: 'KEPALA SUBSEKSI KEAMANAN & KETERTIBAN',
-    name: 'YISTARATI',
-    nip: '198005172005012002',
-    initials: 'YS',
-    color: 'from-rose-500 to-rose-700',
-  },
-];
 
 // Officer Avatar SVG component representing the official uniformed female officer with hijab
 const OfficerAvatar: React.FC<{ name: string }> = ({ name }) => (
@@ -138,7 +144,59 @@ const JobBox: React.FC<{ officer: OfficerData; className?: string; isCompact?: b
   </div>
 );
 
-export const PetaJabatanView: React.FC = () => {
+interface PetaJabatanViewProps {
+  isAdmin?: boolean;
+  onUpdate?: (data: PetaJabatanData) => void;
+}
+
+export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = false, onUpdate }) => {
+  const [petaData, setPetaData] = useState<PetaJabatanData>(() => {
+    try {
+      const stored = localStorage.getItem('silapas_peta_jabatan');
+      if (stored) return JSON.parse(stored);
+    } catch {
+      // fallback
+    }
+    return DEFAULT_PETA_JABATAN;
+  });
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<PetaJabatanData>(petaData);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const handleStartEdit = () => {
+    setFormData(petaData);
+    setIsEditing(true);
+  };
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPetaData(formData);
+    try {
+      localStorage.setItem('silapas_peta_jabatan', JSON.stringify(formData));
+    } catch {
+      // ignore
+    }
+    onUpdate?.(formData);
+    setIsEditing(false);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 2500);
+  };
+
+  const handleReset = () => {
+    setPetaData(DEFAULT_PETA_JABATAN);
+    setFormData(DEFAULT_PETA_JABATAN);
+    try {
+      localStorage.removeItem('silapas_peta_jabatan');
+    } catch {
+      // ignore
+    }
+    onUpdate?.(DEFAULT_PETA_JABATAN);
+    setIsEditing(false);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 2000);
+  };
+
   return (
     <div className="relative w-full rounded-2xl bg-white border border-slate-300 shadow-xl overflow-hidden p-4 sm:p-6 md:p-8 select-none">
       {/* Decorative Golden Navy Ribbon Wave in Corners matching Gambar 2 */}
@@ -165,6 +223,35 @@ export const PetaJabatanView: React.FC = () => {
 
       {/* Header with Official Logos & Typography matching Gambar 2 */}
       <div className="relative z-10 text-center mb-6 sm:mb-8">
+        {/* Admin Edit Button */}
+        {isAdmin && (
+          <div className="flex justify-end mb-3">
+            <button
+              type="button"
+              onClick={() => {
+                if (!isEditing) handleStartEdit();
+                else setIsEditing(false);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
+                isEditing
+                  ? 'bg-amber-500 text-slate-950 font-black'
+                  : 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300'
+              }`}
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>{isEditing ? 'Tutup Formulir Edit' : 'Edit Peta Jabatan'}</span>
+            </button>
+          </div>
+        )}
+
+        {/* Success Alert */}
+        {saveSuccess && (
+          <div className="mb-4 p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5 animate-fade-in">
+            <Check className="w-4 h-4 text-emerald-600" />
+            <span>Struktur Peta Jabatan berhasil disimpan!</span>
+          </div>
+        )}
+
         {/* Dual Logos */}
         <div className="flex items-center justify-center gap-3 sm:gap-4 mb-2">
           <img 
@@ -189,6 +276,223 @@ export const PetaJabatanView: React.FC = () => {
         </p>
       </div>
 
+      {/* Admin Edit Form */}
+      {isEditing && (
+        <form onSubmit={handleSave} className="relative z-20 p-4 sm:p-5 rounded-2xl bg-amber-50/80 border-2 border-amber-300 space-y-4 mb-6 text-left animate-fade-in">
+          <div className="flex items-center justify-between pb-2 border-b border-amber-200">
+            <div className="flex items-center gap-2">
+              <Edit3 className="w-4 h-4 text-amber-800" />
+              <h5 className="font-extrabold text-sm text-slate-900">
+                Formulir Edit Pejabat &amp; Peta Jabatan
+              </h5>
+            </div>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-200 text-amber-900">
+              Admin Mode
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 1. Kepala Lapas */}
+            <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+              <span className="text-[11px] font-bold text-amber-700 block mb-1.5 uppercase">
+                1. Kepala Lapas
+              </span>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  required
+                  placeholder="Nama Lengkap"
+                  value={formData.kepalaLapas.name}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      kepalaLapas: { ...formData.kepalaLapas, name: e.target.value.toUpperCase() },
+                    })
+                  }
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-bold"
+                />
+                <input
+                  type="text"
+                  required
+                  placeholder="NIP"
+                  value={formData.kepalaLapas.nip}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      kepalaLapas: { ...formData.kepalaLapas, nip: e.target.value },
+                    })
+                  }
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-mono"
+                />
+              </div>
+            </div>
+
+            {/* 2. Kaur TU */}
+            <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+              <span className="text-[11px] font-bold text-blue-700 block mb-1.5 uppercase">
+                2. Kaur TU
+              </span>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  required
+                  placeholder="Nama Lengkap"
+                  value={formData.kaurTu.name}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      kaurTu: { ...formData.kaurTu, name: e.target.value.toUpperCase() },
+                    })
+                  }
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-bold"
+                />
+                <input
+                  type="text"
+                  required
+                  placeholder="NIP"
+                  value={formData.kaurTu.nip}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      kaurTu: { ...formData.kaurTu, nip: e.target.value },
+                    })
+                  }
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-mono"
+                />
+              </div>
+            </div>
+
+            {/* 3. Kasubsi Admisi & Orientasi */}
+            <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+              <span className="text-[11px] font-bold text-emerald-700 block mb-1.5 uppercase">
+                3. Kasubsi Admisi &amp; Orientasi
+              </span>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  required
+                  placeholder="Nama Lengkap"
+                  value={formData.subseksi[0]?.name || ''}
+                  onChange={(e) => {
+                    const updated = [...formData.subseksi];
+                    updated[0] = { ...updated[0], name: e.target.value.toUpperCase() };
+                    setFormData({ ...formData, subseksi: updated });
+                  }}
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-bold"
+                />
+                <input
+                  type="text"
+                  required
+                  placeholder="NIP"
+                  value={formData.subseksi[0]?.nip || ''}
+                  onChange={(e) => {
+                    const updated = [...formData.subseksi];
+                    updated[0] = { ...updated[0], nip: e.target.value };
+                    setFormData({ ...formData, subseksi: updated });
+                  }}
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-mono"
+                />
+              </div>
+            </div>
+
+            {/* 4. Kasubsi Pembinaan */}
+            <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+              <span className="text-[11px] font-bold text-indigo-700 block mb-1.5 uppercase">
+                4. Kasubsi Pembinaan
+              </span>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  required
+                  placeholder="Nama Lengkap"
+                  value={formData.subseksi[1]?.name || ''}
+                  onChange={(e) => {
+                    const updated = [...formData.subseksi];
+                    updated[1] = { ...updated[1], name: e.target.value.toUpperCase() };
+                    setFormData({ ...formData, subseksi: updated });
+                  }}
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-bold"
+                />
+                <input
+                  type="text"
+                  required
+                  placeholder="NIP"
+                  value={formData.subseksi[1]?.nip || ''}
+                  onChange={(e) => {
+                    const updated = [...formData.subseksi];
+                    updated[1] = { ...updated[1], nip: e.target.value };
+                    setFormData({ ...formData, subseksi: updated });
+                  }}
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-mono"
+                />
+              </div>
+            </div>
+
+            {/* 5. Kasubsi Kamtib */}
+            <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs md:col-span-2">
+              <span className="text-[11px] font-bold text-rose-700 block mb-1.5 uppercase">
+                5. Kasubsi Keamanan &amp; Ketertiban
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input
+                  type="text"
+                  required
+                  placeholder="Nama Lengkap"
+                  value={formData.subseksi[2]?.name || ''}
+                  onChange={(e) => {
+                    const updated = [...formData.subseksi];
+                    updated[2] = { ...updated[2], name: e.target.value.toUpperCase() };
+                    setFormData({ ...formData, subseksi: updated });
+                  }}
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-bold"
+                />
+                <input
+                  type="text"
+                  required
+                  placeholder="NIP"
+                  value={formData.subseksi[2]?.nip || ''}
+                  onChange={(e) => {
+                    const updated = [...formData.subseksi];
+                    updated[2] = { ...updated[2], nip: e.target.value };
+                    setFormData({ ...formData, subseksi: updated });
+                  }}
+                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-mono"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Form Actions */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-amber-200">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+              <span>Reset ke Bawaan</span>
+            </button>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-1.5 rounded-lg bg-[#0B192C] hover:bg-[#1E3E62] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
+              >
+                <Save className="w-3.5 h-3.5 text-amber-400" />
+                <span>Simpan Perubahan Struktur</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      )}
+
       {/* ========================================================================= */}
       {/* DESKTOP / TABLET TREE DIAGRAM (Exactly matching the layout in Gambar 2)   */}
       {/* ========================================================================= */}
@@ -197,7 +501,7 @@ export const PetaJabatanView: React.FC = () => {
           {/* Row 1: KEPALA LAPAS (Top Center) */}
           <div className="flex justify-center">
             <div className="w-80">
-              <JobBox officer={KEPALA_LAPAS} />
+              <JobBox officer={petaData.kepalaLapas} />
             </div>
           </div>
 
@@ -216,7 +520,7 @@ export const PetaJabatanView: React.FC = () => {
 
             {/* KAUR TU Box positioned to the right */}
             <div className="absolute left-[calc(50%+6rem)] sm:left-[calc(50%+7rem)] top-0 w-72">
-              <JobBox officer={KAUR_TU} />
+              <JobBox officer={petaData.kaurTu} />
             </div>
           </div>
 
@@ -240,7 +544,7 @@ export const PetaJabatanView: React.FC = () => {
 
           {/* Row 3: 3 SUBSEKSI BOXES */}
           <div className="grid grid-cols-3 gap-4 pt-6">
-            {SUBSEKSI_LIST.map((officer, idx) => (
+            {petaData.subseksi.map((officer, idx) => (
               <div key={idx} className="w-full">
                 <JobBox officer={officer} />
               </div>
@@ -255,7 +559,7 @@ export const PetaJabatanView: React.FC = () => {
       <div className="relative z-10 flex flex-col items-center w-full md:hidden space-y-2">
         {/* 1. Kepala Lapas */}
         <div className="w-full max-w-sm">
-          <JobBox officer={KEPALA_LAPAS} />
+          <JobBox officer={petaData.kepalaLapas} />
         </div>
 
         {/* Vertical Connecting Line */}
@@ -266,7 +570,7 @@ export const PetaJabatanView: React.FC = () => {
           <div className="absolute -left-2 top-1/2 -translate-y-1/2 text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">
             Tata Usaha
           </div>
-          <JobBox officer={KAUR_TU} />
+          <JobBox officer={petaData.kaurTu} />
         </div>
 
         {/* Vertical Connecting Line */}
@@ -283,7 +587,7 @@ export const PetaJabatanView: React.FC = () => {
 
         {/* 3. Three Subsections stacked with vertical hierarchy */}
         <div className="w-full max-w-sm space-y-3">
-          {SUBSEKSI_LIST.map((officer, idx) => (
+          {petaData.subseksi.map((officer, idx) => (
             <div key={idx} className="relative">
               <JobBox officer={officer} />
             </div>
