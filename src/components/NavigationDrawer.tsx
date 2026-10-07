@@ -15,7 +15,8 @@ import {
   ShieldCheck,
   Landmark,
   KeyRound,
-  LogOut
+  LogOut,
+  Camera
 } from 'lucide-react';
 
 interface NavigationDrawerProps {
@@ -28,6 +29,7 @@ interface NavigationDrawerProps {
   onOpenJhp: () => void;
   onOpenPegawai: () => void;
   onNavigateSosmed: () => void;
+  onNavigateKilasBalik?: () => void;
   onOpenFaq: () => void;
   isAdmin?: boolean;
   onOpenLogin?: () => void;
@@ -44,6 +46,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onOpenJhp,
   onOpenPegawai,
   onNavigateSosmed,
+  onNavigateKilasBalik,
   onOpenFaq,
   isAdmin = false,
   onOpenLogin,
@@ -268,7 +271,26 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             </div>
           </button>
 
-          {/* 7. FAQ (Dipaling Bawah Sesuai Permintaan) */}
+          {/* 7. Kilas Balik Kegiatan 1 Bulan */}
+          <button
+            onClick={() => {
+              onNavigateKilasBalik?.();
+              onClose();
+            }}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.12] border border-white/5 hover:border-white/15 transition-all text-left group"
+          >
+            <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 group-hover:bg-amber-500/30 transition-colors">
+              <Camera className="w-4 h-4" />
+            </div>
+            <div className="flex-1 flex items-center justify-between">
+              <span>Kilas Balik Kegiatan</span>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/25 text-amber-300 border border-amber-500/40">
+                1 Bulan
+              </span>
+            </div>
+          </button>
+
+          {/* 8. FAQ (Dipaling Bawah Sesuai Permintaan) */}
           <div className="pt-2">
             <button
               onClick={() => {

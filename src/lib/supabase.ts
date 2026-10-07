@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { KilasBalikItem } from '../types';
 
 // Environment variables for Supabase (can be configured in .env or Cloudflare Pages)
 const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL || '').trim();
@@ -19,6 +20,17 @@ export interface DbCustomLink {
   id: string;
   url: string;
   sub_title?: string | null;
+  updated_at?: string;
+}
+
+export interface DbKilasBalik {
+  id: string;
+  title: string;
+  date: string;
+  category: string;
+  description: string;
+  image_url: string;
+  link_url?: string | null;
   updated_at?: string;
 }
 
@@ -127,3 +139,89 @@ export async function deleteCustomLinkFromCloud(serviceId: string): Promise<bool
     return false;
   }
 }
+
+/**
+ * Fetch all Kilas Balik posts from Supabase cloud database
+ */
+export async function fetchKilasBalikFromCloud(): Promise<KilasBalikItem[] | null> {
+  if (!supabase || !isSupabaseConfigured) {
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('kilas_balik')
+      .select('id, title, date, category, description, image_url, link_url')
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.warn('Supabase fetch kilas_balik error:', error.message);
+      return null;
+    }
+
+    if (data && Array.isArray(data) && data.length > 0) {
+      return data.map((row: DbKilasBalik) => ({
+        id: row.id,
+        title: row.title,
+        date: row.date,
+        category: row.category,
+        description: row.description,
+        imageUrl: row.image_url,
+        linkUrl: row.link_url || undefined,
+      }));
+    }
+  } catch (err) {
+    console.warn('Failed to query Supabase kilas_balik:', err);
+  }
+
+  return null;
+}
+
+/**
+ * Save / Update a Kilas Balik post in Supabase cloud database
+ */
+export async function saveKilasBalikItemToCloud(
+  item: KilasBalikItem
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase || !isSupabaseConfigured) {
+    return {
+      success: false,
+      error: 'Supabase belum terhubung di website ini. Postingan hanya tersimpan di memori browser lokal perangkat ini.',
+    };
+  }
+
+  try {
+    const { error } = await supabase
+      .from('kilas_balik')
+      .upsert(
+        {
+          id: item.id,
+          title: item.title,
+          date: item.date,
+          category: item.category,
+          description: item.description,
+          image_url: item.imageUrl,
+          link_url: item.linkUrl || null,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'id' }
+      );
+
+    if (error) {
+      console.error('Supabase kilas_balik upsert error:', error);
+      let userFriendly = error.message;
+      if (error.message.includes('relation') && error.message.includes('does not exist')) {
+        userFriendly = 'Tabel "kilas_balik" belum dibuat di Supabase. Silakan jalankan query pembuatan tabel di SQL Editor Supabase.';
+      } else if (error.message.includes('row-level security') || error.message.includes('policy')) {
+        userFriendly = 'Izin RLS Supabase memblokir penulisan. Tambahkan Policy atau izinkan akses pada tabel kilas_balik di Supabase.';
+      }
+      return { success: false, error: userFriendly };
+    }
+    return { success: true };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Koneksi ke Supabase gagal';
+    console.error('Failed to save kilas_balik to Supabase:', err);
+    return { success: false, error: msg };
+  }
+}
+

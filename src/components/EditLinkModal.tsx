@@ -10,7 +10,9 @@ import {
   HardDrive,
   Share2,
   Cloud,
-  Database
+  Database,
+  PackageSearch,
+  FileText
 } from 'lucide-react';
 import { ServiceItem } from '../types';
 import { isSupabaseConfigured } from '../lib/supabase';
@@ -103,6 +105,36 @@ export const EditLinkModal: React.FC<EditLinkModalProps> = ({
 
   const isPegawai = service.category === 'pegawai';
 
+  const getHeaderIcon = () => {
+    if (service.id === 'bmn-persediaan') return <PackageSearch className="w-5 h-5" />;
+    if (service.id === 'sdm-jurnal-harian') return <FileText className="w-5 h-5" />;
+    if (service.category === 'pegawai') return <HardDrive className="w-5 h-5" />;
+    return <Share2 className="w-5 h-5" />;
+  };
+
+  const getServiceTip = () => {
+    if (service.id === 'bmn-persediaan') {
+      return 'Masukkan tautan web resmi Sistem Pengajuan Persediaan BMN (misal: https://project-lpp.pages.dev/).';
+    }
+    if (service.id === 'sdm-jurnal-harian') {
+      return 'Masukkan tautan Google Form / formulir online untuk pengisian Jurnal Harian Pegawai (JHP).';
+    }
+    if (service.category === 'pegawai') {
+      return 'Masukkan link folder Google Drive data informasi pegawai yang dapat diakses oleh aparatur pegawai Lapas.';
+    }
+    if (service.category === 'sosmed') {
+      return 'Masukkan link tautan resmi profil akun media sosial Lapas Perempuan Kelas III Pangkal Pinang.';
+    }
+    return 'Masukkan tautan URL resmi yang dapat diakses pengunjung.';
+  };
+
+  const getUrlPlaceholder = () => {
+    if (service.id === 'bmn-persediaan') return 'https://project-lpp.pages.dev/';
+    if (service.id === 'sdm-jurnal-harian') return 'https://docs.google.com/forms/d/e/.../viewform';
+    if (service.category === 'pegawai') return 'https://drive.google.com/drive/folders/...';
+    return 'https://...';
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-xs animate-fade-in">
       <div 
@@ -113,7 +145,7 @@ export const EditLinkModal: React.FC<EditLinkModalProps> = ({
         <div className="bg-gradient-to-r from-[#0B192C] via-[#0F2C59] to-[#1E3E62] text-white px-5 sm:px-6 py-4 flex items-center justify-between border-b border-amber-400/40 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-amber-400/20 text-amber-300 border border-amber-400/30">
-              {isPegawai ? <HardDrive className="w-5 h-5" /> : <Share2 className="w-5 h-5" />}
+              {getHeaderIcon()}
             </div>
             <div>
               <h3 className="text-base font-black tracking-tight text-white flex items-center gap-1.5">
@@ -127,7 +159,7 @@ export const EditLinkModal: React.FC<EditLinkModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+            className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
             aria-label="Tutup"
           >
             <X className="w-5 h-5" />
@@ -140,11 +172,7 @@ export const EditLinkModal: React.FC<EditLinkModalProps> = ({
             <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
             <div>
               <strong className="block text-slate-900">{service.title}</strong>
-              <span>
-                {isPegawai
-                  ? 'Masukkan link folder Google Drive data informasi pegawai yang dapat diakses oleh aparatur pegawai Lapas.'
-                  : 'Masukkan link tautan resmi profil akun media sosial Lapas Perempuan Kelas III Pangkal Pinang.'}
-              </span>
+              <span>{getServiceTip()}</span>
             </div>
           </div>
 
@@ -191,7 +219,7 @@ export const EditLinkModal: React.FC<EditLinkModalProps> = ({
                 required
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder={isPegawai ? 'https://drive.google.com/drive/folders/...' : 'https://...'}
+                placeholder={getUrlPlaceholder()}
                 className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-mono"
               />
             </div>

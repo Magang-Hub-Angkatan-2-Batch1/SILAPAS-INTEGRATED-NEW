@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, X, Layers, Sparkles, Building, HardDrive, Share2 } from 'lucide-react';
+import { Search, X, Layers, Sparkles, Building, HardDrive, Share2, Camera } from 'lucide-react';
 import { ServiceCategory } from '../types';
 
 interface HeroProps {
@@ -161,6 +161,18 @@ export const Hero: React.FC<HeroProps> = ({
           >
             <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>Media Sosial Resmi</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById('kilas-balik');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 border border-amber-500/35 cursor-pointer shadow-xs"
+          >
+            <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
+            <span>Kilas Balik Kegiatan</span>
           </button>
         </div>
       </div>

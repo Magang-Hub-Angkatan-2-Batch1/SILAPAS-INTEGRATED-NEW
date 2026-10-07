@@ -14,14 +14,19 @@ import { OfficialsProfileModal } from './components/OfficialsProfileModal';
 import { FaqModal } from './components/FaqModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { EditLinkModal } from './components/EditLinkModal';
+import { KilasBalik } from './components/KilasBalik';
+import { EditKilasBalikModal } from './components/EditKilasBalikModal';
 import { NavigationDrawer } from './components/NavigationDrawer';
 import { Footer } from './components/Footer';
 import { SERVICES_DATA } from './data/services';
-import { ServiceCategory, ServiceItem } from './types';
+import { KILAS_BALIK_DATA } from './data/kilasBalik';
+import { ServiceCategory, ServiceItem, KilasBalikItem } from './types';
 import { 
   fetchCustomLinksFromCloud, 
   saveCustomLinkToCloud, 
   deleteCustomLinkFromCloud,
+  fetchKilasBalikFromCloud,
+  saveKilasBalikItemToCloud,
   isSupabaseConfigured
 } from './lib/supabase';
 import { 
@@ -34,7 +39,8 @@ import {
   Layers,
   HardDrive,
   HelpCircle,
-  Users
+  Users,
+  Camera
 } from 'lucide-react';
 
 export default function App() {
@@ -60,6 +66,21 @@ export default function App() {
   // Edit Link Modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<ServiceItem | null>(null);
+
+  // Kilas Balik 8 activities state with localStorage persistence
+  const [kilasBalikList, setKilasBalikList] = useState<KilasBalikItem[]>(() => {
+    try {
+      const stored = localStorage.getItem('silapas_kilas_balik');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch {
+      // fallback
+    }
+    return KILAS_BALIK_DATA;
+  });
+  const [editingKilasBalik, setEditingKilasBalik] = useState<KilasBalikItem | null>(null);
+  const [isEditKilasBalikOpen, setIsEditKilasBalikOpen] = useState(false);
 
   // Dynamic services list with localStorage persistence for customized links
   const [servicesList, setServicesList] = useState<ServiceItem[]>(() => {
@@ -107,6 +128,17 @@ export default function App() {
         // Cache to localStorage
         try {
           localStorage.setItem('silapas_custom_links', JSON.stringify(cloudLinks));
+        } catch {
+          // ignore
+        }
+      }
+
+      // Sync Kilas Balik posts from Supabase cloud
+      const cloudPosts = await fetchKilasBalikFromCloud();
+      if (cloudPosts && isMounted && cloudPosts.length > 0) {
+        setKilasBalikList(cloudPosts);
+        try {
+          localStorage.setItem('silapas_kilas_balik', JSON.stringify(cloudPosts));
         } catch {
           // ignore
         }
@@ -198,6 +230,49 @@ export default function App() {
 
     // Remove from Supabase Cloud Database
     deleteCustomLinkFromCloud(serviceId);
+  };
+
+  // Kilas Balik Action Handlers
+  const handleOpenEditKilasBalik = (item: KilasBalikItem) => {
+    setEditingKilasBalik(item);
+    setIsEditKilasBalikOpen(true);
+  };
+
+  const handleSaveKilasBalik = async (updated: KilasBalikItem) => {
+    setKilasBalikList((prev) => {
+      const newList = prev.map((item) => (item.id === updated.id ? updated : item));
+      try {
+        localStorage.setItem('silapas_kilas_balik', JSON.stringify(newList));
+      } catch {
+        // ignore
+      }
+      return newList;
+    });
+
+    return await saveKilasBalikItemToCloud(updated);
+  };
+
+  const handleResetKilasBalikDefault = (itemId: string) => {
+    const original = KILAS_BALIK_DATA.find((item) => item.id === itemId);
+    if (!original) return;
+    setKilasBalikList((prev) => {
+      const newList = prev.map((item) => (item.id === itemId ? { ...original } : item));
+      try {
+        localStorage.setItem('silapas_kilas_balik', JSON.stringify(newList));
+      } catch {
+        // ignore
+      }
+      return newList;
+    });
+  };
+
+  const handleNavigateKilasBalik = () => {
+    setTimeout(() => {
+      const el = document.getElementById('kilas-balik');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   // Filter services based on query and active category
@@ -304,6 +379,7 @@ export default function App() {
         onOpenJhp={() => setIsSdmModalOpen(true)}
         onOpenPegawai={handleNavigatePegawai}
         onNavigateSosmed={handleNavigateSosmed}
+        onNavigateKilasBalik={handleNavigateKilasBalik}
         onOpenFaq={() => setIsFaqModalOpen(true)}
         isAdmin={isAdmin}
         onOpenLogin={() => setIsLoginModalOpen(true)}
@@ -455,6 +531,13 @@ export default function App() {
                   </div>
                 </section>
               )}
+
+            {/* SECTION 4: Kilas Balik Kegiatan 1 Bulan Terakhir */}
+            <KilasBalik
+              items={kilasBalikList}
+              isAdmin={isAdmin}
+              onEditItem={handleOpenEditKilasBalik}
+            />
           </div>
         )}
 
@@ -478,6 +561,13 @@ export default function App() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2 shrink-0">
+              <button
+                onClick={handleNavigateKilasBalik}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                <Camera className="w-4 h-4 text-amber-600" />
+                <span>Kilas Balik (8 Kegiatan)</span>
+              </button>
               <button
                 onClick={() => setIsOfficialsModalOpen(true)}
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-xl shadow-xs transition-colors"
@@ -531,6 +621,14 @@ export default function App() {
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleSaveLink}
         onResetDefault={handleResetDefault}
+      />
+
+      <EditKilasBalikModal
+        isOpen={isEditKilasBalikOpen}
+        item={editingKilasBalik}
+        onClose={() => setIsEditKilasBalikOpen(false)}
+        onSave={handleSaveKilasBalik}
+        onResetDefault={handleResetKilasBalikDefault}
       />
 
       <OfficeProfileModal

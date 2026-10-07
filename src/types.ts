@@ -23,3 +23,13 @@ export interface WorkingSchedule {
   hours: string;
   isOpen: boolean;
 }
+
+export interface KilasBalikItem {
+  id: string;
+  title: string;
+  date: string;
+  category: string;
+  description: string;
+  imageUrl: string;
+  linkUrl?: string;
+}
