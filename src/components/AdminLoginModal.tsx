@@ -22,11 +22,21 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   onClose,
   onLoginSuccess,
 }) => {
-  const [email, setEmail] = useState('lppkelasiiipkp@gmail.com');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // Reset fields whenever modal opens
+  React.useEffect(() => {
+    if (isOpen) {
+      setEmail('');
+      setPassword('');
+      setErrorMsg('');
+      setIsSuccess(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -48,6 +58,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
         setIsSuccess(false);
         onLoginSuccess();
         onClose();
+        setEmail('');
         setPassword('');
       }, 600);
     } else {
@@ -122,9 +133,10 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                 <input
                   type="email"
                   required
+                  autoFocus
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="lppkelasiiipkp@gmail.com"
+                  placeholder="Masukkan email administrator"
                   className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-sans"
                 />
               </div>
@@ -142,7 +154,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
-                  autoFocus
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Masukkan kata sandi"

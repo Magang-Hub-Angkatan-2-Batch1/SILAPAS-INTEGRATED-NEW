@@ -444,30 +444,30 @@ export default function App() {
             </div>
           </div>
         ) : (
-          <div className="space-y-12">
+          <div className="space-y-6 sm:space-y-12">
             {/* SECTION 1: Layanan & Website Lapas */}
             {(activeCategory === 'all' || activeCategory === 'layanan') &&
               layananServices.length > 0 && (
                 <section id="layanan-lapas">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 border-b border-slate-200 pb-2.5 sm:pb-3 mb-3.5 sm:mb-6">
                     <div>
-                      <h2 className="text-xl sm:text-2xl font-black text-[#0B192C] flex items-center gap-2.5">
-                        <Building2 className="w-6 h-6 text-blue-700" />
+                      <h2 className="text-lg sm:text-2xl font-black text-[#0B192C] flex items-center gap-2">
+                        <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />
                         <span>Layanan &amp; Website Lapas</span>
                       </h2>
-                      <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                      <p className="text-[11px] sm:text-sm text-slate-500 mt-0.5 line-clamp-1 sm:line-clamp-none">
                         Inovasi digital internal: pengelolaan Barang Milik Negara (BMN) dan pelaporan kinerja SDM
                       </p>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-blue-900 bg-blue-100/80 px-3 py-1 rounded-full border border-blue-200">
+                      <span className="text-[10.5px] sm:text-xs font-bold text-blue-900 bg-blue-100/80 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-blue-200">
                         {layananServices.length} Sistem Tersedia
                       </span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
                     {layananServices.map((service) => (
                       <ServiceCard
                         key={service.id}
@@ -485,25 +485,25 @@ export default function App() {
             {(activeCategory === 'all' || activeCategory === 'pegawai') &&
               pegawaiServices.length > 0 && (
                 <section id="data-pegawai">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 border-b border-slate-200 pb-2.5 sm:pb-3 mb-3.5 sm:mb-6">
                     <div>
-                      <h2 className="text-xl sm:text-2xl font-black text-[#0B192C] flex items-center gap-2.5">
-                        <HardDrive className="w-6 h-6 text-emerald-600" />
+                      <h2 className="text-lg sm:text-2xl font-black text-[#0B192C] flex items-center gap-2">
+                        <HardDrive className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
                         <span>Data Informasi Pegawai</span>
                       </h2>
-                      <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                      <p className="text-[11px] sm:text-sm text-slate-500 mt-0.5 line-clamp-1 sm:line-clamp-none">
                         Pusat penyimpanan digital dan repositori arsip berkas kepegawaian melalui Google Drive resmi
                       </p>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-emerald-800 bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-200">
+                      <span className="text-[10.5px] sm:text-xs font-bold text-emerald-800 bg-emerald-100/80 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-emerald-200">
                         {pegawaiServices.length} Repositori Aktif
                       </span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
                     {pegawaiServices.map((service) => (
                       <ServiceCard
                         key={service.id}
@@ -521,25 +521,25 @@ export default function App() {
             {(activeCategory === 'all' || activeCategory === 'sosmed') &&
               sosmedServices.length > 0 && (
                 <section id="media-sosial">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 border-b border-slate-200 pb-2.5 sm:pb-3 mb-3.5 sm:mb-6">
                     <div>
-                      <h2 className="text-xl sm:text-2xl font-black text-[#0B192C] flex items-center gap-2.5">
-                        <Share2 className="w-6 h-6 text-blue-700" />
+                      <h2 className="text-lg sm:text-2xl font-black text-[#0B192C] flex items-center gap-2">
+                        <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />
                         <span>Media Sosial Resmi</span>
                       </h2>
-                      <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                      <p className="text-[11px] sm:text-sm text-slate-500 mt-0.5 line-clamp-1 sm:line-clamp-none">
                         Kanal komunikasi publik, siaran berita pemasyarakatan, dan transparansi kehumasan Lapas
                       </p>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                      <span className="text-[10.5px] sm:text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-slate-200">
                         {sosmedServices.length} Kanal Aktif
                       </span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
                     {sosmedServices.map((service) => (
                       <ServiceCard
                         key={service.id}
@@ -564,17 +564,17 @@ export default function App() {
         )}
 
         {/* Quick Informational Notice on Integrated Procedures */}
-        <div className="mt-14 p-5 sm:p-6 bg-gradient-to-r from-blue-900/5 via-amber-500/5 to-blue-900/5 rounded-2xl border border-blue-100 shadow-xs">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-start gap-3.5">
-              <div className="p-2.5 bg-blue-900 text-white rounded-xl shadow-xs mt-0.5 md:mt-0">
-                <ShieldCheck className="w-5 h-5 text-amber-400" />
+        <div className="mt-8 sm:mt-14 p-3.5 sm:p-6 bg-gradient-to-r from-blue-900/5 via-amber-500/5 to-blue-900/5 rounded-xl sm:rounded-2xl border border-blue-100 shadow-2xs sm:shadow-xs">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex items-start gap-2.5 sm:gap-3.5">
+              <div className="p-2 sm:p-2.5 bg-blue-900 text-white rounded-lg sm:rounded-xl shadow-xs mt-0.5 md:mt-0">
+                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
               </div>
               <div>
-                <h4 className="text-sm sm:text-base font-bold text-slate-900">
+                <h4 className="text-xs sm:text-base font-bold text-slate-900">
                   Komitmen Pelayanan Publik Prima &amp; Terintegrasi
                 </h4>
-                <p className="text-xs text-slate-600 leading-relaxed max-w-3xl mt-0.5">
+                <p className="text-[11px] sm:text-xs text-slate-600 leading-normal sm:leading-relaxed max-w-3xl mt-0.5 line-clamp-2 sm:line-clamp-none">
                   Setiap layanan pada portal SILAPAS-INTEGRATED diawasi secara langsung oleh Sub Bagian Tata Usaha 
                   dan Kehumasan Lapas Perempuan Kelas III Pangkal Pinang sesuai Standar Operasional Prosedur (SOP) 
                   Kementerian Imigrasi dan Pemasyarakatan Republik Indonesia.
@@ -582,48 +582,48 @@ export default function App() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 onClick={handleNavigateKilasBalik}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl shadow-xs transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[10.5px] sm:text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg sm:rounded-xl shadow-2xs transition-colors cursor-pointer"
               >
-                <Camera className="w-4 h-4 text-amber-600" />
-                <span>Kilas Balik (8 Kegiatan)</span>
+                <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
+                <span>Kilas Balik</span>
               </button>
               <button
                 onClick={() => setIsOfficialsModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-xl shadow-xs transition-colors"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[10.5px] sm:text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl shadow-2xs transition-colors"
               >
-                <Users className="w-4 h-4 text-sky-600" />
+                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600" />
                 <span>Peta Jabatan</span>
               </button>
               <button
                 onClick={() => setIsOfficeModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-xl shadow-xs transition-colors"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[10.5px] sm:text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl shadow-2xs transition-colors"
               >
-                <Building2 className="w-4 h-4 text-amber-600" />
+                <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
                 <span>Profil Kantor</span>
               </button>
               <button
                 onClick={() => setIsFaqModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl shadow-xs transition-colors"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[10.5px] sm:text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg sm:rounded-xl shadow-2xs transition-colors"
               >
-                <HelpCircle className="w-4 h-4 text-amber-600" />
-                <span>FAQ Magang Hub</span>
+                <HelpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
+                <span>FAQ</span>
               </button>
               <button
                 onClick={() => setIsBmnModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-xl shadow-xs transition-colors"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[10.5px] sm:text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl shadow-2xs transition-colors"
               >
-                <FileCheck2 className="w-4 h-4 text-emerald-600" />
-                <span>SOP SI-BMN</span>
+                <FileCheck2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
+                <span>SOP BMN</span>
               </button>
               <button
                 onClick={() => setIsSdmModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-xl shadow-xs transition-colors"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[10.5px] sm:text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl shadow-2xs transition-colors"
               >
-                <FileCheck2 className="w-4 h-4 text-sky-600" />
-                <span>SOP SDM / JHP</span>
+                <FileCheck2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600" />
+                <span>SOP SDM</span>
               </button>
             </div>
           </div>
