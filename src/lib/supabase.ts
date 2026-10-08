@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { KilasBalikItem } from '../types';
+import { KilasBalikItem, OfficeProfileData, PetaJabatanData } from '../types';
 import { KILAS_BALIK_DATA } from '../data/kilasBalik';
 
 function getCredentials() {
@@ -263,6 +263,146 @@ export async function saveKilasBalikItemToCloud(
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Koneksi ke Supabase gagal';
     console.error('Failed to save kilas_balik to Supabase:', err);
+    return { success: false, error: msg };
+  }
+}
+
+/**
+ * Fetch Office Profile from Supabase cloud database
+ */
+export async function fetchOfficeProfileFromCloud(): Promise<OfficeProfileData | null> {
+  if (!supabase || !isSupabaseConfigured) {
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('office_profile')
+      .select('data')
+      .eq('id', 'default')
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Supabase fetch office_profile error:', error.message);
+      return null;
+    }
+
+    if (data && data.data) {
+      return typeof data.data === 'string' ? JSON.parse(data.data) : data.data;
+    }
+  } catch (err) {
+    console.warn('Failed to query Supabase office_profile:', err);
+  }
+
+  return null;
+}
+
+/**
+ * Save Office Profile to Supabase cloud database
+ */
+export async function saveOfficeProfileToCloud(
+  profile: OfficeProfileData
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase || !isSupabaseConfigured) {
+    return {
+      success: false,
+      error: 'Supabase belum terhubung di website ini. Data tersimpan di memori browser lokal perangkat ini.',
+    };
+  }
+
+  try {
+    const { error } = await supabase
+      .from('office_profile')
+      .upsert(
+        {
+          id: 'default',
+          data: profile,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'id' }
+      );
+
+    if (error) {
+      console.error('Supabase office_profile upsert error:', error);
+      let userFriendly = error.message;
+      if (error.message.includes('relation') && error.message.includes('does not exist')) {
+        userFriendly = 'Tabel "office_profile" belum dibuat di Supabase.';
+      }
+      return { success: false, error: userFriendly };
+    }
+    return { success: true };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Koneksi ke Supabase gagal';
+    return { success: false, error: msg };
+  }
+}
+
+/**
+ * Fetch Peta Jabatan & Pejabat from Supabase cloud database
+ */
+export async function fetchPetaJabatanFromCloud(): Promise<PetaJabatanData | null> {
+  if (!supabase || !isSupabaseConfigured) {
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('peta_jabatan')
+      .select('data')
+      .eq('id', 'default')
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Supabase fetch peta_jabatan error:', error.message);
+      return null;
+    }
+
+    if (data && data.data) {
+      return typeof data.data === 'string' ? JSON.parse(data.data) : data.data;
+    }
+  } catch (err) {
+    console.warn('Failed to query Supabase peta_jabatan:', err);
+  }
+
+  return null;
+}
+
+/**
+ * Save Peta Jabatan & Pejabat to Supabase cloud database
+ */
+export async function savePetaJabatanToCloud(
+  peta: PetaJabatanData
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase || !isSupabaseConfigured) {
+    return {
+      success: false,
+      error: 'Supabase belum terhubung di website ini. Data tersimpan di memori browser lokal perangkat ini.',
+    };
+  }
+
+  try {
+    const { error } = await supabase
+      .from('peta_jabatan')
+      .upsert(
+        {
+          id: 'default',
+          data: peta,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'id' }
+      );
+
+    if (error) {
+      console.error('Supabase peta_jabatan upsert error:', error);
+      let userFriendly = error.message;
+      if (error.message.includes('relation') && error.message.includes('does not exist')) {
+        userFriendly = 'Tabel "peta_jabatan" belum dibuat di Supabase.';
+      }
+      return { success: false, error: userFriendly };
+    }
+    return { success: true };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Koneksi ke Supabase gagal';
     return { success: false, error: msg };
   }
 }

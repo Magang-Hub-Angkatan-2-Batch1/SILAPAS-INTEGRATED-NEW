@@ -31,7 +31,6 @@ import {
 } from './lib/supabase';
 import { 
   Building2, 
-  Share2, 
   SearchX, 
   Sparkles, 
   ShieldCheck, 
@@ -300,6 +299,9 @@ export default function App() {
   const filteredServices = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
     return servicesList.filter((item) => {
+      // Exclude social media services as requested
+      if (item.category === 'sosmed') return false;
+
       // Category filter
       const matchesCategory =
         activeCategory === 'all' || item.category === activeCategory;
@@ -319,6 +321,12 @@ export default function App() {
     });
   }, [searchQuery, activeCategory, servicesList]);
 
+  // Active services count without sosmed
+  const activeServicesList = useMemo(
+    () => servicesList.filter((s) => s.category !== 'sosmed'),
+    [servicesList]
+  );
+
   // Group filtered services by category for clean sectioning
   const layananServices = useMemo(
     () => filteredServices.filter((s) => s.category === 'layanan'),
@@ -327,11 +335,6 @@ export default function App() {
 
   const pegawaiServices = useMemo(
     () => filteredServices.filter((s) => s.category === 'pegawai'),
-    [filteredServices]
-  );
-
-  const sosmedServices = useMemo(
-    () => filteredServices.filter((s) => s.category === 'sosmed'),
     [filteredServices]
   );
 
@@ -368,26 +371,27 @@ export default function App() {
     }, 100);
   };
 
-  const handleNavigateSosmed = () => {
-    setActiveCategory('sosmed');
-    setTimeout(() => {
-      const el = document.getElementById('media-sosial');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans selection:bg-blue-900 selection:text-white">
-      {/* 1. Header with Hamburger Menu Button and Admin Login Button */}
-      <Header
-        onOpenMenu={() => setIsDrawerOpen(true)}
-        onScrollToSearch={scrollToSearch}
-        isAdmin={isAdmin}
-        onOpenLogin={() => setIsLoginModalOpen(true)}
-        onLogout={handleLogout}
-      />
+      {/* 1. Full-Screen Blue Portal Section (Header + Hero together full 1 viewport) */}
+      <section className="min-h-screen min-h-[100dvh] flex flex-col bg-gradient-to-b from-[#0B192C] via-[#0F2C59] to-[#1E3E62] border-b border-slate-700/60 shadow-inner relative overflow-hidden">
+        <Header
+          onOpenMenu={() => setIsDrawerOpen(true)}
+          onScrollToSearch={scrollToSearch}
+          isAdmin={isAdmin}
+          onOpenLogin={() => setIsLoginModalOpen(true)}
+          onLogout={handleLogout}
+        />
+
+        <Hero
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          activeCategory={activeCategory}
+          setActiveCategory={setActiveCategory}
+          totalCount={activeServicesList.length}
+          filteredCount={filteredServices.length}
+        />
+      </section>
 
       {/* Navigation Drawer (Sidebar Hamburger Menu) */}
       <NavigationDrawer
@@ -399,7 +403,6 @@ export default function App() {
         onOpenBmn={() => setIsBmnModalOpen(true)}
         onOpenJhp={() => setIsSdmModalOpen(true)}
         onOpenPegawai={handleNavigatePegawai}
-        onNavigateSosmed={handleNavigateSosmed}
         onNavigateKilasBalik={handleNavigateKilasBalik}
         onOpenFaq={() => setIsFaqModalOpen(true)}
         isAdmin={isAdmin}
@@ -407,17 +410,7 @@ export default function App() {
         onLogout={handleLogout}
       />
 
-      {/* 2. Hero with Search and Category Filter */}
-      <Hero
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        activeCategory={activeCategory}
-        setActiveCategory={setActiveCategory}
-        totalCount={servicesList.length}
-        filteredCount={filteredServices.length}
-      />
-
-      {/* 3. Main Services Content */}
+      {/* 2. Main Services Content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
         {/* If no services matched the filter */}
         {filteredServices.length === 0 ? (
@@ -517,43 +510,7 @@ export default function App() {
                 </section>
               )}
 
-            {/* SECTION 3: Media Sosial Resmi */}
-            {(activeCategory === 'all' || activeCategory === 'sosmed') &&
-              sosmedServices.length > 0 && (
-                <section id="media-sosial">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 border-b border-slate-200 pb-2.5 sm:pb-3 mb-3.5 sm:mb-6">
-                    <div>
-                      <h2 className="text-lg sm:text-2xl font-black text-[#0B192C] flex items-center gap-2">
-                        <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />
-                        <span>Media Sosial Resmi</span>
-                      </h2>
-                      <p className="text-[11px] sm:text-sm text-slate-500 mt-0.5 line-clamp-1 sm:line-clamp-none">
-                        Kanal komunikasi publik, siaran berita pemasyarakatan, dan transparansi kehumasan Lapas
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10.5px] sm:text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-slate-200">
-                        {sosmedServices.length} Kanal Aktif
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
-                    {sosmedServices.map((service) => (
-                      <ServiceCard
-                        key={service.id}
-                        service={service}
-                        onOpenWorkflow={handleOpenWorkflow}
-                        isAdmin={isAdmin}
-                        onEditLink={handleOpenEditLink}
-                      />
-                    ))}
-                  </div>
-                </section>
-              )}
-
-            {/* SECTION 4: Kilas Balik Kegiatan 1 Bulan Terakhir */}
+            {/* SECTION 3: Kilas Balik Kegiatan 1 Bulan Terakhir */}
             <KilasBalik
               items={kilasBalikList}
               isAdmin={isAdmin}

@@ -1,4 +1,4 @@
-export type ServiceCategory = 'all' | 'layanan' | 'pegawai' | 'sosmed';
+export type ServiceCategory = 'all' | 'layanan' | 'pegawai';
 
 export interface ServiceItem {
   id: string;
@@ -33,4 +33,34 @@ export interface KilasBalikItem {
   imageUrl: string;
   linkUrl?: string;
   isFromCloud?: boolean;
+}
+
+export interface OfficeProfileData {
+  officeName: string;
+  subTitle: string;
+  aboutText: string;
+  address: string;
+  phone: string;
+  email: string;
+  vision: string;
+  mission: string;
+}
+
+export interface OfficerData {
+  title: string;
+  name: string;
+  nip: string;
+  initials: string;
+  color: string;
+  photoUrl?: string;
+  description?: string;
+  quote?: string;
+  duties?: string[];
+}
+
+export interface PetaJabatanData {
+  structureImageUrl?: string;
+  kepalaLapas: OfficerData;
+  kaurTu: OfficerData;
+  subseksi: OfficerData[];
 }

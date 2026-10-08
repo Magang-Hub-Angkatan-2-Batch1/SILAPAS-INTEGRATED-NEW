@@ -1,28 +1,41 @@
-import React, { useState } from 'react';
-import { ShieldCheck, Award, Edit3, Save, RotateCcw, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { 
+  Award, 
+  Edit3, 
+  Save, 
+  RotateCcw, 
+  Check, 
+  Upload, 
+  Image as ImageIcon, 
+  X, 
+  CloudUpload,
+  Eye,
+  Layers
+} from 'lucide-react';
+import { OfficerData, PetaJabatanData } from '../types';
+import { savePetaJabatanToCloud, fetchPetaJabatanFromCloud } from '../lib/supabase';
 
-export interface OfficerData {
-  title: string;
-  name: string;
-  nip: string;
-  initials: string;
-  color: string;
-}
+// Re-export types for consumers
+export type { OfficerData, PetaJabatanData };
 
-export interface PetaJabatanData {
-  kepalaLapas: OfficerData;
-  kaurTu: OfficerData;
-  subseksi: OfficerData[];
-}
-
-// Data exactly matching Gambar 2 (Struktur Organisasi Lapas Perempuan Kelas III Pangkalpinang)
+// Default Data matching Gambar 2 (Struktur Organisasi Lapas Perempuan Kelas III Pangkalpinang)
 export const DEFAULT_PETA_JABATAN: PetaJabatanData = {
+  structureImageUrl: '',
   kepalaLapas: {
     title: 'KEPALA LAPAS',
     name: 'RINA SETIARI',
     nip: '198304102003122001',
     initials: 'RS',
     color: 'from-amber-400 to-amber-600',
+    photoUrl: '',
+    quote: 'Kami berkomitmen menghadirkan tata kelola pemasyarakatan yang bersih, transparan, dan berlandaskan keadilan humanis. Melalui portal terintegrasi SILAPAS, kami memastikan pelayanan terhadap masyarakat, optimalisasi pengelolaan BMN, dan pencatatan kinerja SDM pegawai berjalan secara akuntabel dan modern.',
+    duties: [
+      'Memimpin penyelenggaraan seluruh tugas dan fungsi Lapas Perempuan Kelas III Pangkal Pinang.',
+      'Mengkoordinasikan program pembinaan kepribadian, kemandirian, dan pelayanan medis WBP.',
+      'Mengawasi stabilitas keamanan ketertiban serta menegakkan integritas aparatur pegawai.',
+      'Membina hubungan kerja sama lintas sektoral dengan APH (Aparat Penegak Hukum), Pemda, dan stakeholder terkait.',
+      'Mendorong inovasi digitalisasi layanan publik dan transparansi birokrasi pemerintahan.'
+    ]
   },
   kaurTu: {
     title: 'KAUR TU',
@@ -30,6 +43,8 @@ export const DEFAULT_PETA_JABATAN: PetaJabatanData = {
     nip: '198404082005012001',
     initials: 'EA',
     color: 'from-blue-500 to-blue-700',
+    photoUrl: '',
+    description: 'Mengelola urusan kepegawaian (JHP), pembukuan keuangan dan DIPA, pencatatan persediaan dan aset Barang Milik Negara (SI-BMN), urusan persuratan dinas, dan kehumasan.'
   },
   subseksi: [
     {
@@ -38,6 +53,8 @@ export const DEFAULT_PETA_JABATAN: PetaJabatanData = {
       nip: '199111152010122002',
       initials: 'AP',
       color: 'from-emerald-500 to-emerald-700',
+      photoUrl: '',
+      description: 'Penyelenggaraan penerimaan tahanan dan narapidana baru, registrasi berkas perkara, penilaian tingkat resiko (asesmen), serta program masa pengenalan lingkungan (Mapenaling).'
     },
     {
       title: 'KEPALA SUBSEKSI PEMBINAAN',
@@ -45,6 +62,8 @@ export const DEFAULT_PETA_JABATAN: PetaJabatanData = {
       nip: '198307242008012001',
       initials: 'MC',
       color: 'from-indigo-500 to-indigo-700',
+      photoUrl: '',
+      description: 'Menyusun dan mengeksekusi program pembinaan mental spiritual keagamaan, pelatihan kemandirian vokasional (tata boga, kerajinan tangan, hidroponik), serta integrasi remisi dan PB/CB.'
     },
     {
       title: 'KEPALA SUBSEKSI KEAMANAN & KETERTIBAN',
@@ -52,91 +71,169 @@ export const DEFAULT_PETA_JABATAN: PetaJabatanData = {
       nip: '198005172005012002',
       initials: 'YS',
       color: 'from-rose-500 to-rose-700',
+      photoUrl: '',
+      description: 'Mengatur jadwal pengamanan regu jaga (Rupam), pengawasan pos komando, Penjaga Pintu Utama (P2U), razia penggeledahan blok hunian wanita, serta pemeliharaan sarana pengamanan.'
     },
   ],
 };
 
-// Officer Avatar SVG component representing the official uniformed female officer with hijab
-const OfficerAvatar: React.FC<{ name: string }> = ({ name }) => (
-  <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-slate-900 bg-gradient-to-b from-sky-100 to-slate-200 shadow-sm shrink-0 flex items-center justify-center">
-    <svg 
-      viewBox="0 0 100 100" 
-      className="w-full h-full"
-      role="img"
-      aria-label={`Foto Pejabat: ${name}`}
-    >
-      {/* Background Soft Glow */}
-      <circle cx="50" cy="50" r="50" fill="#f1f5f9" />
-      
-      {/* Dark Hijab Background Silhouette */}
-      <path 
-        d="M 50 15 C 32 15 26 30 26 50 C 26 68 34 85 34 95 L 66 95 C 66 85 74 68 74 50 C 74 30 68 15 50 15 Z" 
-        fill="#1e293b" 
-      />
+// Compact Officer Avatar component
+export const OfficerAvatar: React.FC<{ name: string; photoUrl?: string }> = ({ name, photoUrl }) => {
+  if (photoUrl) {
+    return (
+      <div className="relative w-7 h-7 xs:w-8 xs:h-8 sm:w-11 sm:h-11 rounded-full overflow-hidden border border-slate-900 sm:border-2 bg-slate-100 shadow-2xs shrink-0 flex items-center justify-center">
+        <img 
+          src={photoUrl} 
+          alt={`Foto: ${name}`} 
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            (e.target as HTMLElement).style.display = 'none';
+          }}
+        />
+      </div>
+    );
+  }
 
-      {/* Face */}
-      <ellipse cx="50" cy="46" rx="16" ry="19" fill="#fde68a" />
-      
-      {/* Face Shadow / Chin */}
-      <path d="M 40 56 Q 50 63 60 56" stroke="#f59e0b" strokeWidth="1" fill="none" opacity="0.6" />
+  return (
+    <div className="relative w-7 h-7 xs:w-8 xs:h-8 sm:w-11 sm:h-11 rounded-full overflow-hidden border border-slate-900 sm:border-2 bg-gradient-to-b from-sky-100 to-slate-200 shadow-2xs shrink-0 flex items-center justify-center">
+      <svg 
+        viewBox="0 0 100 100" 
+        className="w-full h-full"
+        role="img"
+        aria-label={`Foto: ${name}`}
+      >
+        <circle cx="50" cy="50" r="50" fill="#f1f5f9" />
+        <path 
+          d="M 50 15 C 32 15 26 30 26 50 C 26 68 34 85 34 95 L 66 95 C 66 85 74 68 74 50 C 74 30 68 15 50 15 Z" 
+          fill="#1e293b" 
+        />
+        <ellipse cx="50" cy="46" rx="16" ry="19" fill="#fde68a" />
+        <path d="M 40 56 Q 50 63 60 56" stroke="#f59e0b" strokeWidth="1" fill="none" opacity="0.6" />
+        <ellipse cx="44" cy="44" rx="2" ry="1.2" fill="#0f172a" />
+        <ellipse cx="56" cy="44" rx="2" ry="1.2" fill="#0f172a" />
+        <path d="M 41 40 Q 44 38 47 40" stroke="#0f172a" strokeWidth="1.2" fill="none" />
+        <path d="M 53 40 Q 56 38 59 40" stroke="#0f172a" strokeWidth="1.2" fill="none" />
+        <path d="M 46 54 Q 50 57 54 54" stroke="#e11d48" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        <path 
+          d="M 33 48 C 33 65 42 70 50 70 C 58 70 67 65 67 48 C 67 36 64 26 50 26 C 36 26 33 36 33 48 Z" 
+          fill="none" 
+          stroke="#0f172a" 
+          strokeWidth="3.5" 
+        />
+        <path d="M 24 95 C 24 78 36 72 50 72 C 64 72 76 78 76 95 Z" fill="#ffffff" />
+        <path d="M 24 95 C 24 78 36 72 50 72 C 64 72 76 78 76 95" stroke="#cbd5e1" strokeWidth="1.5" fill="none" />
+        <path d="M 43 72 L 50 82 L 57 72" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1.5" />
+        <path d="M 50 82 L 50 95" stroke="#94a3b8" strokeWidth="1" />
+        <rect x="29" y="77" width="7" height="4" rx="1" fill="#f59e0b" transform="rotate(-20 29 77)" />
+        <rect x="64" y="74" width="7" height="4" rx="1" fill="#f59e0b" transform="rotate(20 64 74)" />
+        <rect x="36" y="86" width="9" height="3" rx="0.5" fill="#1e293b" stroke="#f59e0b" strokeWidth="0.5" />
+        <rect x="55" y="86" width="9" height="3" rx="0.5" fill="#f59e0b" />
+      </svg>
+    </div>
+  );
+};
 
-      {/* Eyes & Eyebrows */}
-      <ellipse cx="44" cy="44" rx="2" ry="1.2" fill="#0f172a" />
-      <ellipse cx="56" cy="44" rx="2" ry="1.2" fill="#0f172a" />
-      <path d="M 41 40 Q 44 38 47 40" stroke="#0f172a" strokeWidth="1.2" fill="none" />
-      <path d="M 53 40 Q 56 38 59 40" stroke="#0f172a" strokeWidth="1.2" fill="none" />
+// Reusable Image Upload & Preview Helper Component
+export const ImageUploadField: React.FC<{
+  label: string;
+  currentUrl?: string;
+  onUrlChange: (url: string) => void;
+  placeholder?: string;
+  isCover?: boolean;
+}> = ({ label, currentUrl, onUrlChange, placeholder = 'https://...', isCover = false }) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-      {/* Smile */}
-      <path d="M 46 54 Q 50 57 54 54" stroke="#e11d48" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Ukuran gambar maksimal 2MB. Silakan pilih foto dengan ukuran lebih kecil.');
+      return;
+    }
 
-      {/* Hijab front wrap around chin */}
-      <path 
-        d="M 33 48 C 33 65 42 70 50 70 C 58 70 67 65 67 48 C 67 36 64 26 50 26 C 36 26 33 36 33 48 Z" 
-        fill="none" 
-        stroke="#0f172a" 
-        strokeWidth="3.5" 
-      />
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        onUrlChange(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
-      {/* White Official Uniform (PDH Putih Kemenkumham / Kemenimipas) */}
-      <path d="M 24 95 C 24 78 36 72 50 72 C 64 72 76 78 76 95 Z" fill="#ffffff" />
-      <path d="M 24 95 C 24 78 36 72 50 72 C 64 72 76 78 76 95" stroke="#cbd5e1" strokeWidth="1.5" fill="none" />
+  return (
+    <div className="space-y-1">
+      <label className="block text-[10.5px] sm:text-xs font-bold text-slate-700">
+        {label}
+      </label>
 
-      {/* Uniform V-collar */}
-      <path d="M 43 72 L 50 82 L 57 72" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1.5" />
-      <path d="M 50 82 L 50 95" stroke="#94a3b8" strokeWidth="1" />
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Thumbnail Preview */}
+        {currentUrl ? (
+          <div className="relative group shrink-0">
+            <div className={`overflow-hidden rounded-lg border border-amber-400 bg-slate-100 ${isCover ? 'w-12 h-8 sm:w-16 sm:h-10' : 'w-8 h-8 sm:w-10 sm:h-10'}`}>
+              <img src={currentUrl} alt="Preview" className="w-full h-full object-cover" />
+            </div>
+            <button
+              type="button"
+              onClick={() => onUrlChange('')}
+              className="absolute -top-1 -right-1 p-0.5 rounded-full bg-rose-600 text-white shadow-xs hover:bg-rose-700 transition-colors cursor-pointer"
+              title="Hapus Foto"
+            >
+              <X className="w-2.5 h-2.5" />
+            </button>
+          </div>
+        ) : (
+          <div className={`rounded-lg border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center text-slate-400 shrink-0 ${isCover ? 'w-12 h-8 sm:w-16 sm:h-10' : 'w-8 h-8 sm:w-10 sm:h-10'}`}>
+            <ImageIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </div>
+        )}
 
-      {/* Gold Rank Insignia on shoulders (Tanda Pangkat Emas) */}
-      <rect x="29" y="77" width="7" height="4" rx="1" fill="#f59e0b" transform="rotate(-20 29 77)" />
-      <rect x="64" y="74" width="7" height="4" rx="1" fill="#f59e0b" transform="rotate(20 64 74)" />
+        {/* URL Input */}
+        <div className="flex-1 min-w-0">
+          <input
+            type="text"
+            value={currentUrl || ''}
+            onChange={(e) => onUrlChange(e.target.value)}
+            placeholder={placeholder}
+            className="w-full px-2 py-1 text-[11px] sm:text-xs rounded-lg border border-slate-300 bg-white placeholder-slate-400 text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-500 font-sans"
+          />
+        </div>
 
-      {/* Gold Name Tag / Lencana Dada */}
-      <rect x="36" y="86" width="9" height="3" rx="0.5" fill="#1e293b" stroke="#f59e0b" strokeWidth="0.5" />
-      <rect x="55" y="86" width="9" height="3" rx="0.5" fill="#f59e0b" />
-    </svg>
-  </div>
-);
+        {/* Upload File Button */}
+        <label className="px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[10.5px] sm:text-xs flex items-center gap-1 cursor-pointer shrink-0 shadow-2xs">
+          <Upload className="w-3 h-3" />
+          <span className="hidden xs:inline">Upload</span>
+          <input 
+            type="file" 
+            accept="image/*" 
+            className="hidden" 
+            onChange={handleFileChange}
+          />
+        </label>
+      </div>
+    </div>
+  );
+};
 
-// Individual Job Box Component
-const JobBox: React.FC<{ officer: OfficerData; className?: string; isCompact?: boolean }> = ({ 
+// Compact, Scaled Job Box Component (Never cut off)
+export const JobBox: React.FC<{ officer: OfficerData; className?: string }> = ({ 
   officer, 
-  className = '',
-  isCompact = false 
+  className = '' 
 }) => (
-  <div className={`flex flex-col rounded-xl overflow-hidden shadow-md border-2 border-[#0B192C] bg-white transition-transform hover:-translate-y-0.5 ${className}`}>
+  <div className={`flex flex-col rounded-lg sm:rounded-xl overflow-hidden shadow-2xs sm:shadow-md border border-[#0B192C] sm:border-2 bg-white transition-transform hover:-translate-y-0.5 ${className}`}>
     {/* Dark Navy Header Title */}
-    <div className="bg-[#0B192C] text-white text-center px-2 py-1.5 font-black text-[11px] sm:text-xs tracking-wider uppercase leading-tight select-none">
+    <div className="bg-[#0B192C] text-white text-center px-1 xs:px-1.5 py-0.5 xs:py-1 font-black text-[7.5px] xs:text-[8.5px] sm:text-[10px] md:text-[11px] tracking-wide uppercase leading-tight select-none truncate">
       {officer.title}
     </div>
 
     {/* Body with Avatar and Text Details */}
-    <div className={`p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3 bg-white ${isCompact ? 'min-h-[64px]' : 'min-h-[72px]'}`}>
-      <OfficerAvatar name={officer.name} />
+    <div className="p-1 xs:p-1.5 sm:p-2.5 flex items-center gap-1 xs:gap-1.5 sm:gap-2 bg-white min-h-[40px] xs:min-h-[46px] sm:min-h-[58px]">
+      <OfficerAvatar name={officer.name} photoUrl={officer.photoUrl} />
       
       <div className="min-w-0 flex-1 text-left">
-        <h6 className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight uppercase truncate">
+        <h6 className="font-extrabold text-[8.5px] xs:text-[9.5px] sm:text-xs md:text-sm text-slate-900 leading-tight uppercase truncate">
           {officer.name}
         </h6>
-        <p className="text-[10px] sm:text-[11px] font-mono font-bold text-slate-600 tracking-tight mt-0.5">
+        <p className="text-[7px] xs:text-[7.5px] sm:text-[9px] font-mono font-bold text-slate-600 tracking-tight mt-0.5 truncate">
           NIP: {officer.nip}
         </p>
       </div>
@@ -163,45 +260,84 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<PetaJabatanData>(petaData);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isSavingCloud, setIsSavingCloud] = useState(false);
+  const [showCustomImage, setShowCustomImage] = useState(Boolean(petaData.structureImageUrl));
+
+  // Sync from Supabase on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function loadCloud() {
+      try {
+        const cloudData = await fetchPetaJabatanFromCloud();
+        if (cloudData && isMounted) {
+          setPetaData(cloudData);
+          setFormData(cloudData);
+          if (cloudData.structureImageUrl) {
+            setShowCustomImage(true);
+          }
+          try {
+            localStorage.setItem('silapas_peta_jabatan', JSON.stringify(cloudData));
+          } catch {
+            // ignore
+          }
+        }
+      } catch (err) {
+        console.warn('Error loading peta_jabatan from cloud:', err);
+      }
+    }
+    loadCloud();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleStartEdit = () => {
     setFormData(petaData);
     setIsEditing(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setPetaData(formData);
+    if (formData.structureImageUrl) {
+      setShowCustomImage(true);
+    }
     try {
       localStorage.setItem('silapas_peta_jabatan', JSON.stringify(formData));
     } catch {
       // ignore
     }
     onUpdate?.(formData);
-    setIsEditing(false);
+
+    setIsSavingCloud(true);
+    await savePetaJabatanToCloud(formData);
+    setIsSavingCloud(false);
+
     setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 2500);
+    setTimeout(() => setSaveSuccess(false), 3000);
+    setIsEditing(false);
   };
 
-  const handleReset = () => {
-    setPetaData(DEFAULT_PETA_JABATAN);
-    setFormData(DEFAULT_PETA_JABATAN);
-    try {
-      localStorage.removeItem('silapas_peta_jabatan');
-    } catch {
-      // ignore
+  const handleReset = async () => {
+    if (window.confirm('Reset seluruh struktur organisasi dan foto pejabat ke data bawaan resmi?')) {
+      setPetaData(DEFAULT_PETA_JABATAN);
+      setFormData(DEFAULT_PETA_JABATAN);
+      setShowCustomImage(false);
+      try {
+        localStorage.removeItem('silapas_peta_jabatan');
+      } catch {
+        // ignore
+      }
+      onUpdate?.(DEFAULT_PETA_JABATAN);
+      await savePetaJabatanToCloud(DEFAULT_PETA_JABATAN);
+      setIsEditing(false);
     }
-    onUpdate?.(DEFAULT_PETA_JABATAN);
-    setIsEditing(false);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 2000);
   };
 
   return (
-    <div className="relative w-full rounded-2xl bg-white border border-slate-300 shadow-xl overflow-hidden p-4 sm:p-6 md:p-8 select-none">
-      {/* Decorative Golden Navy Ribbon Wave in Corners matching Gambar 2 */}
-      {/* Top-Left Ribbon */}
-      <div className="absolute top-0 left-0 w-24 h-24 sm:w-36 sm:h-36 pointer-events-none overflow-hidden z-0">
+    <div className="relative w-full rounded-xl sm:rounded-2xl bg-white border border-slate-300 shadow-md sm:shadow-xl overflow-hidden p-2.5 xs:p-3 sm:p-5 md:p-6 select-none">
+      {/* Decorative Golden Navy Ribbon Wave in Corners */}
+      <div className="absolute top-0 left-0 w-16 h-16 sm:w-28 sm:h-28 pointer-events-none overflow-hidden z-0 opacity-80">
         <svg viewBox="0 0 100 100" className="w-full h-full">
           <path d="M 0 0 L 100 0 C 70 20 40 40 30 70 C 20 85 10 100 0 100 Z" fill="#0B192C" />
           <path d="M 0 15 L 85 0 C 60 18 35 38 25 68 C 15 82 5 95 0 95 Z" fill="#1E3E62" />
@@ -209,8 +345,7 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
         </svg>
       </div>
 
-      {/* Top-Right Ribbon */}
-      <div className="absolute top-0 right-0 w-24 h-24 sm:w-36 sm:h-36 pointer-events-none overflow-hidden z-0">
+      <div className="absolute top-0 right-0 w-16 h-16 sm:w-28 sm:h-28 pointer-events-none overflow-hidden z-0 opacity-80">
         <svg viewBox="0 0 100 100" className="w-full h-full">
           <path d="M 100 0 L 0 0 C 30 20 60 40 70 70 C 80 85 90 100 100 100 Z" fill="#0B192C" />
           <path d="M 100 15 L 15 0 C 40 18 65 38 75 68 C 85 82 95 95 100 95 Z" fill="#1E3E62" />
@@ -219,89 +354,120 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
       </div>
 
       {/* Bottom Wave Border */}
-      <div className="absolute bottom-0 left-0 right-0 h-4 sm:h-6 bg-gradient-to-r from-[#0B192C] via-[#D4AF37] to-[#0B192C] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-2.5 sm:h-4 bg-gradient-to-r from-[#0B192C] via-[#D4AF37] to-[#0B192C] pointer-events-none" />
 
-      {/* Header with Official Logos & Typography matching Gambar 2 */}
-      <div className="relative z-10 text-center mb-6 sm:mb-8">
-        {/* Admin Edit Button */}
-        {isAdmin && (
-          <div className="flex justify-end mb-3">
+      {/* Header with Official Logos & Typography */}
+      <div className="relative z-10 text-center mb-3 sm:mb-5">
+        {/* Admin Edit & View Switcher Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2">
+          {petaData.structureImageUrl ? (
+            <button
+              type="button"
+              onClick={() => setShowCustomImage(!showCustomImage)}
+              className="px-2 py-0.5 rounded-lg text-[10.5px] sm:text-xs font-bold transition-all flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 cursor-pointer shadow-2xs"
+            >
+              {showCustomImage ? (
+                <>
+                  <Layers className="w-3 h-3 text-blue-700" />
+                  <span>Bagan Diagram</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="w-3 h-3 text-amber-600" />
+                  <span>Lihat Poster</span>
+                </>
+              )}
+            </button>
+          ) : <div />}
+
+          {isAdmin && (
             <button
               type="button"
               onClick={() => {
                 if (!isEditing) handleStartEdit();
                 else setIsEditing(false);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
+              className={`px-2.5 py-1 rounded-lg text-[10.5px] sm:text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ml-auto ${
                 isEditing
                   ? 'bg-amber-500 text-slate-950 font-black'
                   : 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300'
               }`}
             >
-              <Edit3 className="w-3.5 h-3.5" />
-              <span>{isEditing ? 'Tutup Formulir Edit' : 'Edit Peta Jabatan'}</span>
+              <Edit3 className="w-3 h-3" />
+              <span>{isEditing ? 'Tutup Edit' : 'Edit Peta Jabatan'}</span>
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Success Alert */}
         {saveSuccess && (
-          <div className="mb-4 p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5 animate-fade-in">
-            <Check className="w-4 h-4 text-emerald-600" />
-            <span>Struktur Peta Jabatan berhasil disimpan!</span>
+          <div className="mb-2.5 p-2 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5 animate-fade-in">
+            <Check className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Peta Jabatan berhasil disimpan!</span>
           </div>
         )}
 
         {/* Dual Logos */}
-        <div className="flex items-center justify-center gap-3 sm:gap-4 mb-2">
+        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-1 sm:mb-1.5">
           <img 
             src="/logo.jpg" 
             alt="Logo Kementerian Imigrasi dan Pemasyarakatan" 
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-amber-400 shadow-sm"
+            className="w-7 h-7 sm:w-10 sm:h-10 rounded-full object-cover border border-amber-400 shadow-xs"
           />
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900 border-2 border-amber-400 flex items-center justify-center text-amber-400 shadow-sm">
-            <Award className="w-6 h-6" />
+          <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-slate-900 border border-amber-400 flex items-center justify-center text-amber-400 shadow-xs">
+            <Award className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
 
-        {/* Title Exactly as in Poster Gambar 2 */}
-        <h3 className="text-lg sm:text-2xl md:text-3xl font-black text-[#0B192C] tracking-wide leading-tight">
+        {/* Title */}
+        <h3 className="text-sm xs:text-base sm:text-xl md:text-2xl font-black text-[#0B192C] tracking-wide leading-tight">
           STRUKTUR ORGANISASI
         </h3>
-        <p className="text-xs sm:text-sm md:text-base font-extrabold text-[#0B192C] tracking-wider mt-0.5">
+        <p className="text-[9.5px] xs:text-[10.5px] sm:text-xs md:text-sm font-extrabold text-[#0B192C] tracking-wider mt-0.5">
           LEMBAGA PEMASYARAKATAN PEREMPUAN
         </p>
-        <p className="text-xs sm:text-sm md:text-base font-extrabold text-amber-600 tracking-widest mt-0.5">
+        <p className="text-[9.5px] xs:text-[10.5px] sm:text-xs md:text-sm font-extrabold text-amber-600 tracking-widest mt-0.5">
           KELAS III PANGKALPINANG
         </p>
       </div>
 
       {/* Admin Edit Form */}
       {isEditing && (
-        <form onSubmit={handleSave} className="relative z-20 p-4 sm:p-5 rounded-2xl bg-amber-50/80 border-2 border-amber-300 space-y-4 mb-6 text-left animate-fade-in">
-          <div className="flex items-center justify-between pb-2 border-b border-amber-200">
-            <div className="flex items-center gap-2">
-              <Edit3 className="w-4 h-4 text-amber-800" />
-              <h5 className="font-extrabold text-sm text-slate-900">
-                Formulir Edit Pejabat &amp; Peta Jabatan
+        <form onSubmit={handleSave} className="relative z-20 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-amber-50/95 border border-amber-300 space-y-3 mb-4 text-left animate-fade-in">
+          <div className="flex items-center justify-between pb-1.5 border-b border-amber-200">
+            <div className="flex items-center gap-1.5">
+              <Edit3 className="w-3.5 h-3.5 text-amber-800" />
+              <h5 className="font-extrabold text-xs sm:text-sm text-slate-900">
+                Formulir Edit Pejabat &amp; Gambar
               </h5>
             </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-200 text-amber-900">
+            <span className="text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-amber-200 text-amber-900">
               Admin Mode
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Section: Foto Gambar Bagan Struktur Organisasi */}
+          <div className="p-2.5 bg-white rounded-lg border border-amber-200 shadow-2xs">
+            <ImageUploadField
+              label="Poster Bagan Struktur Organisasi (Opsional)"
+              currentUrl={formData.structureImageUrl}
+              onUrlChange={(url) => setFormData({ ...formData, structureImageUrl: url })}
+              placeholder="Link gambar atau upload poster bagan..."
+              isCover
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
             {/* 1. Kepala Lapas */}
-            <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
-              <span className="text-[11px] font-bold text-amber-700 block mb-1.5 uppercase">
+            <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
+              <span className="text-[10px] font-bold text-amber-700 block mb-1 uppercase">
                 1. Kepala Lapas
               </span>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <input
                   type="text"
                   required
-                  placeholder="Nama Lengkap"
+                  placeholder="Nama Lengkap Kalapas"
                   value={formData.kepalaLapas.name}
                   onChange={(e) =>
                     setFormData({
@@ -309,7 +475,7 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
                       kepalaLapas: { ...formData.kepalaLapas, name: e.target.value.toUpperCase() },
                     })
                   }
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-bold"
+                  className="w-full px-2 py-1 text-xs rounded border border-slate-300 font-bold"
                 />
                 <input
                   type="text"
@@ -322,21 +488,32 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
                       kepalaLapas: { ...formData.kepalaLapas, nip: e.target.value },
                     })
                   }
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-mono"
+                  className="w-full px-2 py-1 text-xs rounded border border-slate-300 font-mono"
+                />
+                <ImageUploadField
+                  label="Foto Profil Kalapas"
+                  currentUrl={formData.kepalaLapas.photoUrl}
+                  onUrlChange={(url) =>
+                    setFormData({
+                      ...formData,
+                      kepalaLapas: { ...formData.kepalaLapas, photoUrl: url },
+                    })
+                  }
+                  placeholder="URL foto atau klik upload..."
                 />
               </div>
             </div>
 
             {/* 2. Kaur TU */}
-            <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
-              <span className="text-[11px] font-bold text-blue-700 block mb-1.5 uppercase">
-                2. Kaur TU
+            <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
+              <span className="text-[10px] font-bold text-blue-700 block mb-1 uppercase">
+                2. Kaur Tata Usaha (Kaur TU)
               </span>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <input
                   type="text"
                   required
-                  placeholder="Nama Lengkap"
+                  placeholder="Nama Lengkap Kaur TU"
                   value={formData.kaurTu.name}
                   onChange={(e) =>
                     setFormData({
@@ -344,7 +521,7 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
                       kaurTu: { ...formData.kaurTu, name: e.target.value.toUpperCase() },
                     })
                   }
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-bold"
+                  className="w-full px-2 py-1 text-xs rounded border border-slate-300 font-bold"
                 />
                 <input
                   type="text"
@@ -357,17 +534,28 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
                       kaurTu: { ...formData.kaurTu, nip: e.target.value },
                     })
                   }
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-mono"
+                  className="w-full px-2 py-1 text-xs rounded border border-slate-300 font-mono"
+                />
+                <ImageUploadField
+                  label="Foto Profil Kaur TU"
+                  currentUrl={formData.kaurTu.photoUrl}
+                  onUrlChange={(url) =>
+                    setFormData({
+                      ...formData,
+                      kaurTu: { ...formData.kaurTu, photoUrl: url },
+                    })
+                  }
+                  placeholder="URL foto atau klik upload..."
                 />
               </div>
             </div>
 
             {/* 3. Kasubsi Admisi & Orientasi */}
-            <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
-              <span className="text-[11px] font-bold text-emerald-700 block mb-1.5 uppercase">
+            <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
+              <span className="text-[10px] font-bold text-emerald-700 block mb-1 uppercase">
                 3. Kasubsi Admisi &amp; Orientasi
               </span>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <input
                   type="text"
                   required
@@ -378,7 +566,7 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
                     updated[0] = { ...updated[0], name: e.target.value.toUpperCase() };
                     setFormData({ ...formData, subseksi: updated });
                   }}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-bold"
+                  className="w-full px-2 py-1 text-xs rounded border border-slate-300 font-bold"
                 />
                 <input
                   type="text"
@@ -390,17 +578,26 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
                     updated[0] = { ...updated[0], nip: e.target.value };
                     setFormData({ ...formData, subseksi: updated });
                   }}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-mono"
+                  className="w-full px-2 py-1 text-xs rounded border border-slate-300 font-mono"
+                />
+                <ImageUploadField
+                  label="Foto Kasubsi AO"
+                  currentUrl={formData.subseksi[0]?.photoUrl}
+                  onUrlChange={(url) => {
+                    const updated = [...formData.subseksi];
+                    updated[0] = { ...updated[0], photoUrl: url };
+                    setFormData({ ...formData, subseksi: updated });
+                  }}
                 />
               </div>
             </div>
 
             {/* 4. Kasubsi Pembinaan */}
-            <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
-              <span className="text-[11px] font-bold text-indigo-700 block mb-1.5 uppercase">
+            <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
+              <span className="text-[10px] font-bold text-indigo-700 block mb-1 uppercase">
                 4. Kasubsi Pembinaan
               </span>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <input
                   type="text"
                   required
@@ -411,7 +608,7 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
                     updated[1] = { ...updated[1], name: e.target.value.toUpperCase() };
                     setFormData({ ...formData, subseksi: updated });
                   }}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-bold"
+                  className="w-full px-2 py-1 text-xs rounded border border-slate-300 font-bold"
                 />
                 <input
                   type="text"
@@ -423,14 +620,23 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
                     updated[1] = { ...updated[1], nip: e.target.value };
                     setFormData({ ...formData, subseksi: updated });
                   }}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-mono"
+                  className="w-full px-2 py-1 text-xs rounded border border-slate-300 font-mono"
+                />
+                <ImageUploadField
+                  label="Foto Kasubsi Pembinaan"
+                  currentUrl={formData.subseksi[1]?.photoUrl}
+                  onUrlChange={(url) => {
+                    const updated = [...formData.subseksi];
+                    updated[1] = { ...updated[1], photoUrl: url };
+                    setFormData({ ...formData, subseksi: updated });
+                  }}
                 />
               </div>
             </div>
 
             {/* 5. Kasubsi Kamtib */}
-            <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs md:col-span-2">
-              <span className="text-[11px] font-bold text-rose-700 block mb-1.5 uppercase">
+            <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs md:col-span-2">
+              <span className="text-[10px] font-bold text-rose-700 block mb-1 uppercase">
                 5. Kasubsi Keamanan &amp; Ketertiban
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -444,7 +650,7 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
                     updated[2] = { ...updated[2], name: e.target.value.toUpperCase() };
                     setFormData({ ...formData, subseksi: updated });
                   }}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-bold"
+                  className="w-full px-2 py-1 text-xs rounded border border-slate-300 font-bold"
                 />
                 <input
                   type="text"
@@ -456,7 +662,18 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
                     updated[2] = { ...updated[2], nip: e.target.value };
                     setFormData({ ...formData, subseksi: updated });
                   }}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 font-mono"
+                  className="w-full px-2 py-1 text-xs rounded border border-slate-300 font-mono"
+                />
+              </div>
+              <div className="mt-1.5">
+                <ImageUploadField
+                  label="Foto Kasubsi Kamtib"
+                  currentUrl={formData.subseksi[2]?.photoUrl}
+                  onUrlChange={(url) => {
+                    const updated = [...formData.subseksi];
+                    updated[2] = { ...updated[2], photoUrl: url };
+                    setFormData({ ...formData, subseksi: updated });
+                  }}
                 />
               </div>
             </div>
@@ -467,138 +684,112 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
             <button
               type="button"
               onClick={handleReset}
-              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer"
+              className="px-2.5 py-1 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center gap-1 cursor-pointer"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-              <span>Reset ke Bawaan</span>
+              <RotateCcw className="w-3 h-3 text-slate-500" />
+              <span>Reset</span>
             </button>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer"
+                className="px-2.5 py-1 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer"
               >
                 Batal
               </button>
               <button
                 type="submit"
-                className="px-4 py-1.5 rounded-lg bg-[#0B192C] hover:bg-[#1E3E62] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
+                disabled={isSavingCloud}
+                className="px-3.5 py-1 rounded-lg bg-[#0B192C] hover:bg-[#1E3E62] text-white font-bold text-xs flex items-center gap-1 shadow-sm cursor-pointer disabled:opacity-70"
               >
-                <Save className="w-3.5 h-3.5 text-amber-400" />
-                <span>Simpan Perubahan Struktur</span>
+                {isSavingCloud ? (
+                  <>
+                    <CloudUpload className="w-3 h-3 text-amber-400 animate-spin" />
+                    <span>Menyimpan...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-3 h-3 text-amber-400" />
+                    <span>Simpan Perubahan</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
         </form>
       )}
 
-      {/* ========================================================================= */}
-      {/* DESKTOP / TABLET TREE DIAGRAM (Exactly matching the layout in Gambar 2)   */}
-      {/* ========================================================================= */}
-      <div className="relative z-10 max-w-4xl mx-auto hidden md:block overflow-x-auto pb-4">
-        <div className="min-w-[720px]">
+      {/* OPTION A: Custom Image Poster (if uploaded by admin) */}
+      {showCustomImage && petaData.structureImageUrl && !isEditing ? (
+        <div className="relative z-10 max-w-2xl mx-auto rounded-lg sm:rounded-xl overflow-hidden border border-[#0B192C] shadow-sm mb-3 bg-slate-100">
+          <img 
+            src={petaData.structureImageUrl} 
+            alt="Bagan Struktur Organisasi Resmi Lapas Perempuan Kelas III Pangkalpinang"
+            className="w-full h-auto object-contain max-h-[500px] mx-auto"
+          />
+        </div>
+      ) : (
+        /* OPTION B: UNIFIED COMPACT TREE DIAGRAM (NEVER CUT OFF ON MOBILE OR DESKTOP) */
+        <div className="relative z-10 w-full max-w-2xl mx-auto px-0.5 sm:px-2">
           {/* Row 1: KEPALA LAPAS (Top Center) */}
           <div className="flex justify-center">
-            <div className="w-80">
+            <div className="w-48 xs:w-56 sm:w-64 max-w-[85%]">
               <JobBox officer={petaData.kepalaLapas} />
             </div>
           </div>
 
           {/* Vertical line from Kepala Lapas */}
           <div className="flex justify-center">
-            <div className="w-1 bg-[#0B192C] h-8" />
+            <div className="w-0.5 bg-[#0B192C] h-3 xs:h-4 sm:h-5" />
           </div>
 
-          {/* Row 2: Branch Line to KAUR TU (On the right) */}
-          <div className="relative w-full h-24">
-            {/* Main vertical trunk continuing down in center */}
-            <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-1 bg-[#0B192C]" />
+          {/* Row 2: Branch Line to KAUR TU (On the right of central trunk, zero overflow) */}
+          <div className="relative w-full h-14 xs:h-16 sm:h-20 flex items-center">
+            {/* Main vertical trunk continuing down in exact center */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-0.5 bg-[#0B192C]" />
 
-            {/* Horizontal branch line to the right */}
-            <div className="absolute left-1/2 top-10 h-1 bg-[#0B192C] w-24 sm:w-28" />
+            {/* Horizontal branch line from center to right */}
+            <div className="absolute left-1/2 top-1/2 -translate-y-1/2 h-0.5 bg-[#0B192C] w-4 xs:w-6 sm:w-10" />
 
-            {/* KAUR TU Box positioned to the right */}
-            <div className="absolute left-[calc(50%+6rem)] sm:left-[calc(50%+7rem)] top-0 w-72">
+            {/* KAUR TU Box positioned to the right of central trunk */}
+            <div className="absolute left-[calc(50%+1rem)] xs:left-[calc(50%+1.5rem)] sm:left-[calc(50%+2.5rem)] top-1/2 -translate-y-1/2 w-40 xs:w-48 sm:w-56 max-w-[46%]">
               <JobBox officer={petaData.kaurTu} />
             </div>
           </div>
 
           {/* Vertical trunk continuing to horizontal distributor */}
           <div className="flex justify-center">
-            <div className="w-1 bg-[#0B192C] h-6" />
+            <div className="w-0.5 bg-[#0B192C] h-3 xs:h-3.5 sm:h-4" />
           </div>
 
           {/* Horizontal Connector Line for 3 Subsections */}
-          <div className="relative w-full px-12">
-            {/* Main Horizontal Bar */}
-            <div className="w-full h-1 bg-[#0B192C] relative">
-              {/* Left drop line */}
-              <div className="absolute left-[16%] top-0 w-1 h-6 bg-[#0B192C]" />
-              {/* Center drop line */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-0 w-1 h-6 bg-[#0B192C]" />
-              {/* Right drop line */}
-              <div className="absolute right-[16%] top-0 w-1 h-6 bg-[#0B192C]" />
+          <div className="relative w-full px-5 xs:px-7 sm:px-12">
+            <div className="w-full h-0.5 bg-[#0B192C] relative">
+              {/* Left drop line directly into center of column 1 */}
+              <div className="absolute left-[16.6%] top-0 w-0.5 h-2.5 xs:h-3 sm:h-3.5 bg-[#0B192C]" />
+              {/* Center drop line directly into center of column 2 */}
+              <div className="absolute left-1/2 -translate-x-1/2 top-0 w-0.5 h-2.5 xs:h-3 sm:h-3.5 bg-[#0B192C]" />
+              {/* Right drop line directly into center of column 3 */}
+              <div className="absolute right-[16.6%] top-0 w-0.5 h-2.5 xs:h-3 sm:h-3.5 bg-[#0B192C]" />
             </div>
           </div>
 
-          {/* Row 3: 3 SUBSEKSI BOXES */}
-          <div className="grid grid-cols-3 gap-4 pt-6">
+          {/* Row 3: 3 SUBSEKSI BOXES (Fits naturally within container width!) */}
+          <div className="grid grid-cols-3 gap-1 xs:gap-1.5 sm:gap-3 pt-2.5 xs:pt-3 sm:pt-3.5">
             {petaData.subseksi.map((officer, idx) => (
-              <div key={idx} className="w-full">
+              <div key={idx} className="w-full min-w-0">
                 <JobBox officer={officer} />
               </div>
             ))}
           </div>
         </div>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* MOBILE RESPONSIVE TREE DIAGRAM (Tailored for vertical smartphone screens) */}
-      {/* ========================================================================= */}
-      <div className="relative z-10 flex flex-col items-center w-full md:hidden space-y-2">
-        {/* 1. Kepala Lapas */}
-        <div className="w-full max-w-sm">
-          <JobBox officer={petaData.kepalaLapas} />
-        </div>
-
-        {/* Vertical Connecting Line */}
-        <div className="w-1 bg-[#0B192C] h-5" />
-
-        {/* 2. Kaur TU */}
-        <div className="w-full max-w-sm relative">
-          <div className="absolute -left-2 top-1/2 -translate-y-1/2 text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">
-            Tata Usaha
-          </div>
-          <JobBox officer={petaData.kaurTu} />
-        </div>
-
-        {/* Vertical Connecting Line */}
-        <div className="w-1 bg-[#0B192C] h-5" />
-
-        {/* Subseksi Divider Header */}
-        <div className="w-full max-w-sm flex items-center gap-2 my-1">
-          <div className="h-0.5 flex-1 bg-slate-300" />
-          <span className="text-[10px] font-black uppercase text-slate-600 tracking-wider">
-            Subseksi Teknis Operasional
-          </span>
-          <div className="h-0.5 flex-1 bg-slate-300" />
-        </div>
-
-        {/* 3. Three Subsections stacked with vertical hierarchy */}
-        <div className="w-full max-w-sm space-y-3">
-          {petaData.subseksi.map((officer, idx) => (
-            <div key={idx} className="relative">
-              <JobBox officer={officer} />
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* Bottom Information Notice */}
-      <div className="relative z-10 mt-8 pt-4 border-t border-slate-200 text-center">
-        <p className="text-[11px] text-slate-500 font-medium">
-          Ditetapkan berdasarkan Struktur Baku Organisasi Satuan Kerja Pemasyarakatan &bull; Kementerian Imigrasi dan Pemasyarakatan RI
+      <div className="relative z-10 mt-4 sm:mt-5 pt-2 border-t border-slate-200 text-center">
+        <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium">
+          Ditetapkan berdasarkan Struktur Baku Satuan Kerja &bull; Kemenimipas RI
         </p>
       </div>
     </div>

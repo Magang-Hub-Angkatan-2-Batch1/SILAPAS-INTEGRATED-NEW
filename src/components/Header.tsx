@@ -59,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header className="w-full bg-[#0B192C] text-white sticky top-0 z-40 shadow-md border-b border-slate-800">
+    <header className="w-full bg-[#0B192C] text-white sticky top-0 z-40 shadow-md border-b border-slate-800 shrink-0">
       {/* Top Banner Bar */}
       <div className="bg-[#07111f] border-b border-slate-800/80 px-2.5 sm:px-4 py-1.5 text-[10px] sm:text-xs text-slate-300">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2">

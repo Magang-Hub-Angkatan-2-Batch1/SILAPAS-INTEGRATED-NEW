@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Building2, 
@@ -17,8 +17,10 @@ import {
   Edit3,
   Save,
   RotateCcw,
-  Check
+  Check,
+  CloudUpload
 } from 'lucide-react';
+import { saveOfficeProfileToCloud, fetchOfficeProfileFromCloud } from '../lib/supabase';
 
 export interface OfficeProfileData {
   officeName: string;
@@ -67,6 +69,28 @@ export const OfficeProfileModal: React.FC<OfficeProfileModalProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<OfficeProfileData>(profile);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isSavingCloud, setIsSavingCloud] = useState(false);
+
+  // Sync from Supabase on modal open
+  useEffect(() => {
+    if (isOpen) {
+      let isMounted = true;
+      fetchOfficeProfileFromCloud().then((cloudData) => {
+        if (cloudData && isMounted) {
+          setProfile(cloudData);
+          setFormData(cloudData);
+          try {
+            localStorage.setItem('silapas_office_profile', JSON.stringify(cloudData));
+          } catch {
+            // ignore
+          }
+        }
+      });
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -75,7 +99,7 @@ export const OfficeProfileModal: React.FC<OfficeProfileModalProps> = ({
     setIsEditing(true);
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     setProfile(formData);
     try {
@@ -83,22 +107,30 @@ export const OfficeProfileModal: React.FC<OfficeProfileModalProps> = ({
     } catch {
       // ignore
     }
+
+    setIsSavingCloud(true);
+    await saveOfficeProfileToCloud(formData);
+    setIsSavingCloud(false);
+
     setIsEditing(false);
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 2500);
   };
 
-  const handleResetDefault = () => {
-    setProfile(DEFAULT_OFFICE_PROFILE);
-    setFormData(DEFAULT_OFFICE_PROFILE);
-    try {
-      localStorage.removeItem('silapas_office_profile');
-    } catch {
-      // ignore
+  const handleResetDefault = async () => {
+    if (window.confirm('Reset data profil kantor ke pengaturan bawaan resmi?')) {
+      setProfile(DEFAULT_OFFICE_PROFILE);
+      setFormData(DEFAULT_OFFICE_PROFILE);
+      try {
+        localStorage.removeItem('silapas_office_profile');
+      } catch {
+        // ignore
+      }
+      await saveOfficeProfileToCloud(DEFAULT_OFFICE_PROFILE);
+      setIsEditing(false);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2000);
     }
-    setIsEditing(false);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 2000);
   };
 
   return (

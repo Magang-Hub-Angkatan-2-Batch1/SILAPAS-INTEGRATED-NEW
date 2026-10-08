@@ -7,7 +7,6 @@ import {
   PackageSearch, 
   FileText, 
   HardDrive,
-  Share2, 
   HelpCircle,
   PhoneCall, 
   ShieldCheck,
@@ -24,7 +23,7 @@ interface NavigationDrawerProps {
   onOpenBmn: () => void;
   onOpenJhp: () => void;
   onOpenPegawai: () => void;
-  onNavigateSosmed: () => void;
+  onNavigateSosmed?: () => void;
   onNavigateKilasBalik?: () => void;
   onOpenFaq: () => void;
   isAdmin?: boolean;
@@ -204,19 +203,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
           <div className="my-2 border-t border-slate-800/80" />
 
-          {/* 8. Media Sosial */}
-          <button
-            onClick={() => {
-              onNavigateSosmed();
-              onClose();
-            }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-colors text-left font-medium"
-          >
-            <Share2 className="w-4 h-4 text-pink-400 shrink-0" />
-            <span>Media Sosial Resmi</span>
-          </button>
-
-          {/* 9. FAQ */}
+          {/* 8. FAQ & Bantuan */}
           <button
             onClick={() => {
               onOpenFaq();

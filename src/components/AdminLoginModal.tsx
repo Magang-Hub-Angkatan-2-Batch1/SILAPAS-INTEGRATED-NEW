@@ -102,7 +102,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-2.5 text-xs text-blue-900">
             <ShieldCheck className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
             <span>
-              Masukkan email dan kata sandi pengelola resmi untuk mengedit data SILAPAS.
+              Silakan masukkan email dan kata sandi untuk mengakses mode administrator.
             </span>
           </div>
 
@@ -121,10 +121,10 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
           )}
 
           <form onSubmit={handleSubmit} className="space-y-3.5">
-            {/* Email Field */}
+            {/* Email Field - Filled by User */}
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Email Administrator
+                Alamat Email
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -134,9 +134,10 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                   type="email"
                   required
                   autoFocus
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Masukkan email administrator"
+                  placeholder="Masukkan alamat email Anda"
                   className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-sans"
                 />
               </div>
