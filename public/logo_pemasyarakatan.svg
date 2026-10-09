@@ -1,0 +1,359 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient matching user's image dark background -->
+    <radialGradient id="darkBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#242b33" />
+      <stop offset="70%" stop-color="#181d22" />
+      <stop offset="100%" stop-color="#0f1317" />
+    </radialGradient>
+
+    <!-- Rich Gold Gradient for Rice Grains -->
+    <linearGradient id="riceGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF066" />
+      <stop offset="30%" stop-color="#FFC820" />
+      <stop offset="70%" stop-color="#F2A900" />
+      <stop offset="100%" stop-color="#BF7800" />
+    </linearGradient>
+
+    <!-- Gold Gradient for Ribbon -->
+    <linearGradient id="ribbonBody" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B87B14" />
+      <stop offset="18%" stop-color="#F5CE56" />
+      <stop offset="50%" stop-color="#FFF4B8" />
+      <stop offset="82%" stop-color="#F5CE56" />
+      <stop offset="100%" stop-color="#B87B14" />
+    </linearGradient>
+
+    <!-- Drop shadow for crest elements -->
+    <filter id="crestShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <!-- Dark circular background badge matching exact user uploaded image -->
+  <circle cx="200" cy="240" r="195" fill="url(#darkBg)" stroke="#D4AF37" stroke-width="3.5" />
+  <circle cx="200" cy="240" r="188" fill="none" stroke="#F5CE56" stroke-width="1" opacity="0.6" />
+
+  <g filter="url(#crestShadow)">
+    <!-- ======================================================== -->
+    <!-- 1. LEFT BRANCH: BUNGA KAPAS / MELATI HIJAU BERMAHKOTA PUTIH -->
+    <!-- ======================================================== -->
+    <g id="leftBranch">
+      <!-- Stalk curve -->
+      <path d="M 96 360 C 80 320 68 260 76 210 C 86 160 120 115 195 80" stroke="#008538" stroke-width="3.5" fill="none" stroke-linecap="round" />
+
+      <!-- Tier 1: Bottom -->
+      <g transform="translate(94, 348) rotate(22)">
+        <polygon points="0,0 -16,14 16,14" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -16,14 Q -12,25 -7,18 Q -2,26 3,18 Q 8,26 13,18 Q 16,25 16,14 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+
+      <!-- Tier 2 -->
+      <g transform="translate(85, 318) rotate(16)">
+        <polygon points="0,0 -16,14 16,14" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -16,14 Q -12,25 -7,18 Q -2,26 3,18 Q 8,26 13,18 Q 16,25 16,14 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(70, 310) rotate(-5)">
+        <polygon points="0,0 -14,12 14,12" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -14,12 Q -10,22 -6,16 Q -2,23 2,16 Q 6,23 11,16 Q 14,22 14,12 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+
+      <!-- Tier 3 -->
+      <g transform="translate(78, 280) rotate(10)">
+        <polygon points="0,0 -16,14 16,14" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -16,14 Q -12,25 -7,18 Q -2,26 3,18 Q 8,26 13,18 Q 16,25 16,14 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(58, 270) rotate(-12)">
+        <polygon points="0,0 -14,12 14,12" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -14,12 Q -10,22 -6,16 Q -2,23 2,16 Q 6,23 11,16 Q 14,22 14,12 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(42, 260) rotate(-28)">
+        <polygon points="0,0 -12,11 12,11" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -12,11 Q -9,20 -5,14 Q -1,21 3,14 Q 7,21 10,14 Q 12,20 12,11 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+
+      <!-- Tier 4 -->
+      <g transform="translate(75, 240) rotate(5)">
+        <polygon points="0,0 -15,13 15,13" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -15,13 Q -11,23 -6,17 Q -1,24 4,17 Q 9,24 13,17 Q 15,23 15,13 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(54, 230) rotate(-18)">
+        <polygon points="0,0 -14,12 14,12" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -14,12 Q -10,22 -6,16 Q -2,23 2,16 Q 6,23 11,16 Q 14,22 14,12 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(35, 218) rotate(-35)">
+        <polygon points="0,0 -12,11 12,11" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -12,11 Q -9,20 -5,14 Q -1,21 3,14 Q 7,21 10,14 Q 12,20 12,11 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(18, 204) rotate(-50)">
+        <polygon points="0,0 -10,10 10,10" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -10,10 Q -7,18 -4,13 Q 0,18 3,13 Q 6,18 9,13 Q 10,18 10,10 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+
+      <!-- Tier 5 -->
+      <g transform="translate(76, 200) rotate(-4)">
+        <polygon points="0,0 -14,13 14,13" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -14,13 Q -10,23 -6,17 Q -1,24 4,17 Q 9,24 12,17 Q 14,23 14,13 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(56, 190) rotate(-25)">
+        <polygon points="0,0 -13,12 13,12" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -13,12 Q -9,21 -5,15 Q -1,22 3,15 Q 7,22 10,15 Q 13,21 13,12 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(38, 178) rotate(-42)">
+        <polygon points="0,0 -11,10 11,10" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -11,10 Q -8,18 -4,13 Q 0,19 3,13 Q 6,19 9,13 Q 11,18 11,10 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+
+      <!-- Tier 6: Upper curve -->
+      <g transform="translate(85, 162) rotate(-15)">
+        <polygon points="0,0 -13,12 13,12" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -13,12 Q -9,21 -5,15 Q -1,22 3,15 Q 7,22 10,15 Q 13,21 13,12 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(68, 150) rotate(-36)">
+        <polygon points="0,0 -12,11 12,11" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -12,11 Q -9,20 -5,14 Q -1,21 3,14 Q 7,21 10,14 Q 12,20 12,11 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(52, 136) rotate(-55)">
+        <polygon points="0,0 -10,10 10,10" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -10,10 Q -7,18 -4,13 Q 0,18 3,13 Q 6,18 9,13 Q 10,18 10,10 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+
+      <!-- Tier 7: Inward bend -->
+      <g transform="translate(104, 130) rotate(-32)">
+        <polygon points="0,0 -12,11 12,11" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -12,11 Q -9,20 -5,14 Q -1,21 3,14 Q 7,21 10,14 Q 12,20 12,11 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(90, 116) rotate(-52)">
+        <polygon points="0,0 -11,10 11,10" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -11,10 Q -8,18 -4,13 Q 0,19 3,13 Q 6,19 9,13 Q 11,18 11,10 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+
+      <!-- Tier 8: Approaching top apex -->
+      <g transform="translate(132, 104) rotate(-50)">
+        <polygon points="0,0 -11,10 11,10" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -11,10 Q -8,18 -4,13 Q 0,19 3,13 Q 6,19 9,13 Q 11,18 11,10 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <g transform="translate(162, 88) rotate(-65)">
+        <polygon points="0,0 -10,9 10,9" fill="#008538" stroke="#005e26" stroke-width="0.8" />
+        <path d="M -10,9 Q -7,16 -3,12 Q 0,17 3,12 Q 6,17 8,12 Q 10,16 10,9 Z" fill="#FFFFFF" stroke="#005e26" stroke-width="0.6" />
+      </g>
+      <!-- Tip Florets -->
+      <g transform="translate(190, 78) rotate(-80)">
+        <polygon points="0,0 -8,8 8,8" fill="#008538" />
+        <path d="M -8,8 Q -5,14 -2,10 Q 0,14 2,10 Q 5,14 8,8 Z" fill="#FFFFFF" />
+      </g>
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- 2. RIGHT BRANCH: BULIR PADI EMAS (GOLDEN RICE)          -->
+    <!-- ======================================================== -->
+    <g id="rightBranch">
+      <!-- Stalk stem curve -->
+      <path d="M 235 348 C 300 325 330 260 324 200 C 316 148 275 105 198 78" stroke="#C98616" stroke-width="3" fill="none" stroke-linecap="round" />
+
+      <!-- Golden Rice Seeds - Repeating double rows curving upward -->
+      <!-- Low base -->
+      <g transform="translate(258, 332) rotate(-15)">
+        <ellipse cx="0" cy="0" rx="6.5" ry="14" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-13" x2="0" y2="13" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+      <g transform="translate(276, 318) rotate(12)">
+        <ellipse cx="0" cy="0" rx="6.5" ry="14" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-13" x2="0" y2="13" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+
+      <!-- Row 2 -->
+      <g transform="translate(276, 296) rotate(-8)">
+        <ellipse cx="0" cy="0" rx="6.5" ry="14" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-13" x2="0" y2="13" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+      <g transform="translate(296, 282) rotate(20)">
+        <ellipse cx="0" cy="0" rx="6.5" ry="14" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-13" x2="0" y2="13" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+      <g transform="translate(315, 270) rotate(35)">
+        <ellipse cx="0" cy="0" rx="6.5" ry="14" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+      </g>
+
+      <!-- Row 3 -->
+      <g transform="translate(288, 258) rotate(0)">
+        <ellipse cx="0" cy="0" rx="6.5" ry="14" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-13" x2="0" y2="13" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+      <g transform="translate(308, 245) rotate(28)">
+        <ellipse cx="0" cy="0" rx="6.5" ry="14" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-13" x2="0" y2="13" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+      <g transform="translate(328, 234) rotate(45)">
+        <ellipse cx="0" cy="0" rx="6.5" ry="14" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+      </g>
+
+      <!-- Row 4 -->
+      <g transform="translate(292, 222) rotate(8)">
+        <ellipse cx="0" cy="0" rx="6.2" ry="13.5" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-12" x2="0" y2="12" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+      <g transform="translate(312, 210) rotate(35)">
+        <ellipse cx="0" cy="0" rx="6.2" ry="13.5" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-12" x2="0" y2="12" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+      <g transform="translate(332, 200) rotate(52)">
+        <ellipse cx="0" cy="0" rx="6" ry="13" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+      </g>
+
+      <!-- Row 5 -->
+      <g transform="translate(290, 185) rotate(16)">
+        <ellipse cx="0" cy="0" rx="6" ry="13" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-12" x2="0" y2="12" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+      <g transform="translate(308, 172) rotate(42)">
+        <ellipse cx="0" cy="0" rx="6" ry="13" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-12" x2="0" y2="12" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+      <g transform="translate(325, 162) rotate(60)">
+        <ellipse cx="0" cy="0" rx="5.8" ry="12.5" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+      </g>
+
+      <!-- Row 6: Curve inward -->
+      <g transform="translate(278, 150) rotate(25)">
+        <ellipse cx="0" cy="0" rx="5.8" ry="12.5" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-11" x2="0" y2="11" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+      <g transform="translate(294, 138) rotate(52)">
+        <ellipse cx="0" cy="0" rx="5.8" ry="12.5" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+        <line x1="0" y1="-11" x2="0" y2="11" stroke="#A86E08" stroke-width="0.7" />
+      </g>
+      <g transform="translate(308, 128) rotate(70)">
+        <ellipse cx="0" cy="0" rx="5.5" ry="12" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+      </g>
+
+      <!-- Row 7: Apex curve -->
+      <g transform="translate(258, 120) rotate(42)">
+        <ellipse cx="0" cy="0" rx="5.5" ry="12" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+      </g>
+      <g transform="translate(272, 108) rotate(65)">
+        <ellipse cx="0" cy="0" rx="5.5" ry="12" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+      </g>
+      <g transform="translate(240, 96) rotate(60)">
+        <ellipse cx="0" cy="0" rx="5.2" ry="11.5" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+      </g>
+      <g transform="translate(216, 84) rotate(75)">
+        <ellipse cx="0" cy="0" rx="5" ry="11" fill="url(#riceGold)" stroke="#8A5608" stroke-width="0.8" />
+      </g>
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- 3. CENTER: POHON BERINGIN PENGAYOMAN (BERINGIN TREE)     -->
+    <!-- ======================================================== -->
+    <g id="pohonPengayoman">
+      <!-- Full Green Canopy Body -->
+      <path 
+        d="M 200 112 
+           C 184 112 174 122 178 132 
+           C 166 130 156 138 158 150 
+           C 146 152 142 164 148 174 
+           C 158 184 174 182 184 176 
+           C 190 184 210 184 216 176 
+           C 226 182 242 184 252 174 
+           C 258 164 254 152 242 150 
+           C 244 138 234 130 222 132 
+           C 226 122 216 112 200 112 Z" 
+        fill="#009B3A" 
+        stroke="#006622" 
+        stroke-width="1.8" 
+      />
+
+      <!-- Lower Mid Tier Lobes -->
+      <path 
+        d="M 172 152 
+           C 158 152 148 162 152 174 
+           C 140 178 136 190 142 202 
+           C 152 214 170 214 180 206 
+           C 188 214 212 214 220 206 
+           C 230 214 248 214 258 202 
+           C 264 190 260 178 248 174 
+           C 252 162 242 152 228 152 Z" 
+        fill="#009B3A" 
+        stroke="#006622" 
+        stroke-width="1.8" 
+      />
+
+      <!-- Intricate White Veins / Filigree of Indonesian Pengayoman Tree -->
+      <!-- Center Main Trunk & Branch Veins -->
+      <path d="M 200 230 L 200 172" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+      <path d="M 200 190 C 185 180 170 185 158 175" stroke="#FFFFFF" stroke-width="2.6" fill="none" stroke-linecap="round" />
+      <path d="M 200 190 C 215 180 230 185 242 175" stroke="#FFFFFF" stroke-width="2.6" fill="none" stroke-linecap="round" />
+      <path d="M 200 172 C 188 158 178 162 168 152" stroke="#FFFFFF" stroke-width="2.4" fill="none" stroke-linecap="round" />
+      <path d="M 200 172 C 212 158 222 162 232 152" stroke="#FFFFFF" stroke-width="2.4" fill="none" stroke-linecap="round" />
+      <path d="M 200 155 C 190 142 186 136 182 128" stroke="#FFFFFF" stroke-width="2.2" fill="none" stroke-linecap="round" />
+      <path d="M 200 155 C 210 142 214 136 218 128" stroke="#FFFFFF" stroke-width="2.2" fill="none" stroke-linecap="round" />
+      <path d="M 200 155 L 200 120" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" />
+
+      <!-- Characteristic Hanging Aerial Roots (Sulur Beringin) in White Outlines -->
+      <path d="M 172 176 L 172 208" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+      <path d="M 184 182 L 184 214" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+      <path d="M 216 182 L 216 214" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+      <path d="M 228 176 L 228 208" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+
+      <!-- Tree Base Trunk & Roots -->
+      <path d="M 192 230 C 182 236 172 238 165 240 L 235 240 C 228 238 218 236 208 230 Z" fill="#009B3A" stroke="#006622" stroke-width="1.5" />
+      <path d="M 194 230 C 186 235 178 238 170 240" stroke="#FFFFFF" stroke-width="2.4" fill="none" stroke-linecap="round" />
+      <path d="M 206 230 C 214 235 222 238 230 240" stroke="#FFFFFF" stroke-width="2.4" fill="none" stroke-linecap="round" />
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- 4. BASE: BUNGA TERATAI PUTIH (WHITE LOTUS BLOSSOM)       -->
+    <!-- ======================================================== -->
+    <g id="bungaTeratai">
+      <!-- Outermost Wing Petals -->
+      <path d="M 175 292 C 145 282 135 260 130 246 C 140 272 165 288 190 295 Z" fill="#FFFFFF" stroke="#8E9DAE" stroke-width="1.3" />
+      <path d="M 225 292 C 255 282 265 260 270 246 C 260 272 235 288 210 295 Z" fill="#FFFFFF" stroke="#8E9DAE" stroke-width="1.3" />
+
+      <!-- Lower Wing Base Petals -->
+      <path d="M 165 304 C 140 312 130 298 125 286 C 132 308 152 320 180 316 Z" fill="#FFFFFF" stroke="#8E9DAE" stroke-width="1.3" />
+      <path d="M 235 304 C 260 312 270 298 275 286 C 268 308 248 320 220 316 Z" fill="#FFFFFF" stroke="#8E9DAE" stroke-width="1.3" />
+
+      <!-- Inner Base Cup -->
+      <path d="M 160 316 C 185 330 215 330 240 316 C 230 334 170 334 160 316 Z" fill="#E2E8F0" stroke="#8E9DAE" stroke-width="1.3" />
+
+      <!-- Central Upright Lotus Heart Petals -->
+      <path d="M 200 256 C 188 274 176 296 186 310 C 194 318 206 318 214 310 C 224 296 212 274 200 256 Z" fill="#FFFFFF" stroke="#8E9DAE" stroke-width="1.5" />
+      <path d="M 200 272 C 194 284 192 294 196 302 C 200 306 200 306 204 302 C 208 294 206 284 200 272 Z" fill="#F1F5F9" />
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- 5. RIBBON BANNER: PITA EMAS "PEMASYARAKATAN"             -->
+    <!-- ======================================================== -->
+    <g id="pitaPemasyarakatan">
+      <!-- Ribbon Back Folds & Tails (Dark Gold Shadow) -->
+      <polygon points="102,392 88,414 108,426 122,402" fill="#7A4D06" stroke="#4F3001" stroke-width="0.8" />
+      <polygon points="88,414 66,428 76,402 102,392" fill="#A86E08" stroke="#4F3001" stroke-width="0.8" />
+      
+      <polygon points="298,392 312,414 292,426 278,402" fill="#7A4D06" stroke="#4F3001" stroke-width="0.8" />
+      <polygon points="312,414 334,428 324,402 298,392" fill="#A86E08" stroke="#4F3001" stroke-width="0.8" />
+
+      <!-- Main Curved Banner Arc -->
+      <path 
+        d="M 96 392 
+           C 145 366 255 366 304 392 
+           L 294 424 
+           C 250 398 150 398 106 424 Z" 
+        fill="url(#ribbonBody)" 
+        stroke="#7A4D06" 
+        stroke-width="1.8" 
+      />
+
+      <!-- Embossed Highlight Lines along Ribbon Edge -->
+      <path d="M 98 395 C 146 369 254 369 302 395" stroke="#FFFFFF" stroke-width="0.8" fill="none" opacity="0.6" />
+      <path d="M 108 421 C 151 395 249 395 292 421" stroke="#7A4D06" stroke-width="0.8" fill="none" opacity="0.5" />
+
+      <!-- Official Text: PEMASYARAKATAN (Bold, Curved Path) -->
+      <path id="ribbonTextPath" d="M 106 405 C 152 381 248 381 294 405" fill="none" stroke="none" />
+      <text font-family="'Arial Black', Arial, Impact, sans-serif" font-weight="900" font-size="16.5" letter-spacing="3" fill="#181308">
+        <textPath href="#ribbonTextPath" startOffset="50%" text-anchor="middle">
+          PEMASYARAKATAN
+        </textPath>
+      </text>
+    </g>
+  </g>
+</svg>

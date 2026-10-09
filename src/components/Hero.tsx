@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, X, Layers, Building, HardDrive, Camera, ChevronDown } from 'lucide-react';
+import { Search, X, Layers, Building, HardDrive, Camera, ChevronDown, Lock } from 'lucide-react';
 import { ServiceCategory } from '../types';
 
 interface HeroProps {
@@ -9,6 +9,8 @@ interface HeroProps {
   setActiveCategory: (cat: ServiceCategory) => void;
   totalCount: number;
   filteredCount: number;
+  isUserLoggedIn?: boolean;
+  onOpenLogin?: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -18,6 +20,8 @@ export const Hero: React.FC<HeroProps> = ({
   setActiveCategory,
   totalCount,
   filteredCount,
+  isUserLoggedIn = false,
+  onOpenLogin,
 }) => {
   return (
     <div className="relative flex-1 flex flex-col justify-between pt-2 sm:pt-6 pb-2 sm:pb-4 px-3 sm:px-6 lg:px-8 overflow-hidden w-full">
@@ -128,7 +132,13 @@ export const Hero: React.FC<HeroProps> = ({
           </button>
 
           <button
-            onClick={() => setActiveCategory('layanan')}
+            onClick={() => {
+              if (!isUserLoggedIn) {
+                onOpenLogin?.();
+                return;
+              }
+              setActiveCategory('layanan');
+            }}
             className={`inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer ${
               activeCategory === 'layanan'
                 ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20 font-bold'
@@ -137,10 +147,17 @@ export const Hero: React.FC<HeroProps> = ({
           >
             <Building className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             <span>Layanan &amp; Web</span>
+            {!isUserLoggedIn && <Lock className="w-2.5 h-2.5 text-amber-300 ml-0.5" />}
           </button>
 
           <button
-            onClick={() => setActiveCategory('pegawai')}
+            onClick={() => {
+              if (!isUserLoggedIn) {
+                onOpenLogin?.();
+                return;
+              }
+              setActiveCategory('pegawai');
+            }}
             className={`inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer ${
               activeCategory === 'pegawai'
                 ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20 font-bold'
@@ -149,6 +166,7 @@ export const Hero: React.FC<HeroProps> = ({
           >
             <HardDrive className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             <span>Data Pegawai</span>
+            {!isUserLoggedIn && <Lock className="w-2.5 h-2.5 text-amber-300 ml-0.5" />}
           </button>
 
           <button

@@ -21,6 +21,8 @@ export type { OfficerData, PetaJabatanData };
 // Default Data matching Gambar 2 (Struktur Organisasi Lapas Perempuan Kelas III Pangkalpinang)
 export const DEFAULT_PETA_JABATAN: PetaJabatanData = {
   structureImageUrl: '',
+  logoKiriUrl: '/logo.jpg',
+  logoKananUrl: '/logo_pemasyarakatan.svg',
   kepalaLapas: {
     title: 'KEPALA LAPAS',
     name: 'RINA SETIARI',
@@ -38,7 +40,7 @@ export const DEFAULT_PETA_JABATAN: PetaJabatanData = {
     ]
   },
   kaurTu: {
-    title: 'KAUR TU',
+    title: 'Kepala Urusan TU',
     name: 'EVI ASWANI',
     nip: '198404082005012001',
     initials: 'EA',
@@ -218,28 +220,35 @@ export const ImageUploadField: React.FC<{
 export const JobBox: React.FC<{ officer: OfficerData; className?: string }> = ({ 
   officer, 
   className = '' 
-}) => (
-  <div className={`flex flex-col rounded-lg sm:rounded-xl overflow-hidden shadow-2xs sm:shadow-md border border-[#0B192C] sm:border-2 bg-white transition-transform hover:-translate-y-0.5 ${className}`}>
-    {/* Dark Navy Header Title */}
-    <div className="bg-[#0B192C] text-white text-center px-1 xs:px-1.5 py-0.5 xs:py-1 font-black text-[7.5px] xs:text-[8.5px] sm:text-[10px] md:text-[11px] tracking-wide uppercase leading-tight select-none truncate">
-      {officer.title}
-    </div>
+}) => {
+  // Normalize KAUR TU to Kepala Urusan TU
+  const displayTitle = (officer.title === 'KAUR TU' || officer.title === 'Kepala Urusan TU') 
+    ? 'Kepala Urusan TU' 
+    : officer.title;
 
-    {/* Body with Avatar and Text Details */}
-    <div className="p-1 xs:p-1.5 sm:p-2.5 flex items-center gap-1 xs:gap-1.5 sm:gap-2 bg-white min-h-[40px] xs:min-h-[46px] sm:min-h-[58px]">
-      <OfficerAvatar name={officer.name} photoUrl={officer.photoUrl} />
-      
-      <div className="min-w-0 flex-1 text-left">
-        <h6 className="font-extrabold text-[8.5px] xs:text-[9.5px] sm:text-xs md:text-sm text-slate-900 leading-tight uppercase truncate">
-          {officer.name}
-        </h6>
-        <p className="text-[7px] xs:text-[7.5px] sm:text-[9px] font-mono font-bold text-slate-600 tracking-tight mt-0.5 truncate">
-          NIP: {officer.nip}
-        </p>
+  return (
+    <div className={`flex flex-col rounded-lg sm:rounded-xl overflow-hidden shadow-2xs sm:shadow-md border border-[#0B192C] sm:border-2 bg-white transition-transform hover:-translate-y-0.5 ${className}`}>
+      {/* Dark Navy Header Title */}
+      <div className="bg-[#0B192C] text-white text-center px-0.5 xs:px-1.5 py-0.5 xs:py-1 font-black text-[6.5px] xs:text-[7.5px] sm:text-[9.5px] md:text-[10.5px] tracking-tight sm:tracking-wide uppercase leading-tight select-none truncate">
+        {displayTitle}
+      </div>
+
+      {/* Body with Avatar and Text Details */}
+      <div className="p-0.5 xs:p-1.5 sm:p-2.5 flex items-center gap-1 xs:gap-1.5 sm:gap-2 bg-white min-h-[38px] xs:min-h-[44px] sm:min-h-[58px]">
+        <OfficerAvatar name={officer.name} photoUrl={officer.photoUrl} />
+        
+        <div className="min-w-0 flex-1 text-left">
+          <h6 className="font-extrabold text-[8px] xs:text-[9px] sm:text-xs md:text-sm text-slate-900 leading-tight uppercase truncate">
+            {officer.name}
+          </h6>
+          <p className="text-[6.5px] xs:text-[7px] sm:text-[8.5px] font-mono font-bold text-slate-600 tracking-tight mt-0.5 truncate">
+            NIP: {officer.nip}
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 interface PetaJabatanViewProps {
   isAdmin?: boolean;
@@ -250,7 +259,19 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
   const [petaData, setPetaData] = useState<PetaJabatanData>(() => {
     try {
       const stored = localStorage.getItem('silapas_peta_jabatan');
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.kaurTu && (parsed.kaurTu.title === 'KAUR TU' || !parsed.kaurTu.title)) {
+          parsed.kaurTu.title = 'Kepala Urusan TU';
+        }
+        if (!parsed.logoKiriUrl) {
+          parsed.logoKiriUrl = '/logo.jpg';
+        }
+        if (!parsed.logoKananUrl) {
+          parsed.logoKananUrl = '/logo_pemasyarakatan.svg';
+        }
+        return parsed;
+      }
     } catch {
       // fallback
     }
@@ -270,6 +291,15 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
       try {
         const cloudData = await fetchPetaJabatanFromCloud();
         if (cloudData && isMounted) {
+          if (cloudData.kaurTu && (cloudData.kaurTu.title === 'KAUR TU' || !cloudData.kaurTu.title)) {
+            cloudData.kaurTu.title = 'Kepala Urusan TU';
+          }
+          if (!cloudData.logoKiriUrl) {
+            cloudData.logoKiriUrl = '/logo.jpg';
+          }
+          if (!cloudData.logoKananUrl) {
+            cloudData.logoKananUrl = '/logo_pemasyarakatan.svg';
+          }
           setPetaData(cloudData);
           setFormData(cloudData);
           if (cloudData.structureImageUrl) {
@@ -394,7 +424,7 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
               }`}
             >
               <Edit3 className="w-3 h-3" />
-              <span>{isEditing ? 'Tutup Edit' : 'Edit Peta Jabatan'}</span>
+              <span>{isEditing ? 'Tutup Edit' : 'Edit Struktur Organisasi'}</span>
             </button>
           )}
         </div>
@@ -403,19 +433,38 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
         {saveSuccess && (
           <div className="mb-2.5 p-2 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5 animate-fade-in">
             <Check className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Peta Jabatan berhasil disimpan!</span>
+            <span>Struktur Organisasi berhasil disimpan!</span>
           </div>
         )}
 
-        {/* Dual Logos */}
-        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-1 sm:mb-1.5">
-          <img 
-            src="/logo.jpg" 
-            alt="Logo Kementerian Imigrasi dan Pemasyarakatan" 
-            className="w-7 h-7 sm:w-10 sm:h-10 rounded-full object-cover border border-amber-400 shadow-xs"
-          />
-          <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-slate-900 border border-amber-400 flex items-center justify-center text-amber-400 shadow-xs">
-            <Award className="w-4 h-4 sm:w-5 sm:h-5" />
+        {/* Dual Logos: Kemenimipas (Kiri) & Pemasyarakatan (Kanan) Sesuai GANDENG (1).webp */}
+        <div className="flex items-center justify-center gap-3 sm:gap-6 mb-2 sm:mb-3">
+          {/* Logo Kiri: Kemenimipas */}
+          <div className="relative group flex items-center justify-center">
+            <div className="w-10 h-10 xs:w-12 xs:h-12 sm:w-16 sm:h-16 rounded-full border-2 sm:border-3 border-amber-400 shadow-md transition-transform hover:scale-105 bg-[#0B192C] overflow-hidden flex items-center justify-center">
+              <img 
+                src={petaData.logoKiriUrl || '/logo.jpg'} 
+                alt="Logo Kementerian Imigrasi dan Pemasyarakatan" 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/logo.jpg';
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Logo Kanan: Direktorat Jenderal Pemasyarakatan (Logo Resmi Pemasyarakatan) */}
+          <div className="relative group flex items-center justify-center">
+            <div className="w-10 h-10 xs:w-12 xs:h-12 sm:w-16 sm:h-16 rounded-full bg-slate-900 border-2 sm:border-3 border-amber-400 p-0.5 flex items-center justify-center shadow-md transition-transform hover:scale-105 overflow-hidden">
+              <img 
+                src={petaData.logoKananUrl || '/logo_pemasyarakatan.svg'} 
+                alt="Logo Resmi Pemasyarakatan" 
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/logo_pemasyarakatan.svg';
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -438,23 +487,43 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
             <div className="flex items-center gap-1.5">
               <Edit3 className="w-3.5 h-3.5 text-amber-800" />
               <h5 className="font-extrabold text-xs sm:text-sm text-slate-900">
-                Formulir Edit Pejabat &amp; Gambar
+                Formulir Edit Struktur Organisasi &amp; Pejabat
               </h5>
             </div>
             <span className="text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-amber-200 text-amber-900">
-              Admin Mode
+              Admin Mode &bull; Supabase Sync
             </span>
           </div>
 
-          {/* Section: Foto Gambar Bagan Struktur Organisasi */}
-          <div className="p-2.5 bg-white rounded-lg border border-amber-200 shadow-2xs">
-            <ImageUploadField
-              label="Poster Bagan Struktur Organisasi (Opsional)"
-              currentUrl={formData.structureImageUrl}
-              onUrlChange={(url) => setFormData({ ...formData, structureImageUrl: url })}
-              placeholder="Link gambar atau upload poster bagan..."
-              isCover
-            />
+          {/* Section: Logo Kiri, Logo Kanan, & Poster Bagan Struktur */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+            <div className="p-2.5 bg-white rounded-lg border border-amber-200 shadow-2xs">
+              <ImageUploadField
+                label="Logo Sebelah Kiri (Kemenimipas)"
+                currentUrl={formData.logoKiriUrl || '/logo.jpg'}
+                onUrlChange={(url) => setFormData({ ...formData, logoKiriUrl: url })}
+                placeholder="Bawaan: /logo.jpg atau upload..."
+              />
+            </div>
+
+            <div className="p-2.5 bg-white rounded-lg border border-amber-200 shadow-2xs">
+              <ImageUploadField
+                label="Logo Sebelah Kanan (Pemasyarakatan)"
+                currentUrl={formData.logoKananUrl || '/logo_pemasyarakatan.svg'}
+                onUrlChange={(url) => setFormData({ ...formData, logoKananUrl: url })}
+                placeholder="Bawaan: /logo_pemasyarakatan.svg atau upload..."
+              />
+            </div>
+
+            <div className="p-2.5 bg-white rounded-lg border border-amber-200 shadow-2xs">
+              <ImageUploadField
+                label="Poster Bagan Struktur Organisasi (Opsional)"
+                currentUrl={formData.structureImageUrl}
+                onUrlChange={(url) => setFormData({ ...formData, structureImageUrl: url })}
+                placeholder="Link gambar atau upload poster bagan..."
+                isCover
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
@@ -504,16 +573,16 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
               </div>
             </div>
 
-            {/* 2. Kaur TU */}
+            {/* 2. Kepala Urusan TU */}
             <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
               <span className="text-[10px] font-bold text-blue-700 block mb-1 uppercase">
-                2. Kaur Tata Usaha (Kaur TU)
+                2. Kepala Urusan Tata Usaha (Kepala Urusan TU)
               </span>
               <div className="space-y-1.5">
                 <input
                   type="text"
                   required
-                  placeholder="Nama Lengkap Kaur TU"
+                  placeholder="Nama Lengkap Kepala Urusan TU"
                   value={formData.kaurTu.name}
                   onChange={(e) =>
                     setFormData({
@@ -537,7 +606,7 @@ export const PetaJabatanView: React.FC<PetaJabatanViewProps> = ({ isAdmin = fals
                   className="w-full px-2 py-1 text-xs rounded border border-slate-300 font-mono"
                 />
                 <ImageUploadField
-                  label="Foto Profil Kaur TU"
+                  label="Foto Profil Kepala Urusan TU"
                   currentUrl={formData.kaurTu.photoUrl}
                   onUrlChange={(url) =>
                     setFormData({

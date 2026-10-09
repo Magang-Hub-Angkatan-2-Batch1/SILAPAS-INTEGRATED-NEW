@@ -4,13 +4,19 @@ import {
   PhoneCall, 
   Clock, 
   Building2, 
-  ShieldCheck
+  ShieldCheck,
+  KeyRound,
+  UserCheck,
+  LogOut
 } from 'lucide-react';
+import { AuthSession } from '../types';
 
 interface HeaderProps {
   onOpenMenu: () => void;
   onScrollToSearch: () => void;
   isAdmin?: boolean;
+  isUserLoggedIn?: boolean;
+  currentUser?: AuthSession | null;
   onOpenLogin?: () => void;
   onLogout?: () => void;
 }
@@ -18,6 +24,11 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ 
   onOpenMenu, 
   onScrollToSearch,
+  isAdmin = false,
+  isUserLoggedIn = false,
+  currentUser,
+  onOpenLogin,
+  onLogout,
 }) => {
   // Simple check for Indonesian public office hours (WIB is UTC+7)
   const [currentWibTime, setCurrentWibTime] = React.useState<string>('');
@@ -148,6 +159,41 @@ export const Header: React.FC<HeaderProps> = ({
             <Building2 className="w-3.5 h-3.5 text-sky-400" />
             Cari Layanan
           </button>
+
+          {/* User / Admin Authentication State Button */}
+          {!isUserLoggedIn ? (
+            <button
+              type="button"
+              onClick={onOpenLogin}
+              className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-bold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/40 rounded-xl transition-all cursor-pointer shadow-2xs"
+              title="Login Pegawai / Administrator Lapas"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>Login <span className="hidden xs:inline">Pegawai</span></span>
+            </button>
+          ) : (
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-slate-800/80 border border-slate-700 p-0.5 sm:px-2 sm:py-1 rounded-xl">
+              <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                isAdmin 
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' 
+                  : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+              }`}>
+                {isAdmin ? <ShieldCheck className="w-3 h-3 text-amber-400" /> : <UserCheck className="w-3 h-3 text-emerald-400" />}
+                <span className="max-w-[70px] sm:max-w-[100px] truncate">
+                  {isAdmin ? 'Admin' : 'Pegawai'}
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={onLogout}
+                className="p-1 sm:px-1.5 text-[10px] text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
+                title="Keluar / Logout"
+                aria-label="Logout"
+              >
+                <LogOut className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              </button>
+            </div>
+          )}
 
           {/* Call / Pengaduan Button (Clean and compact, no overlap on mobile) */}
           <a

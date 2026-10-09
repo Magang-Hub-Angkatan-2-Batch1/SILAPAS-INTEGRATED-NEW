@@ -13,6 +13,7 @@ import { OfficeProfileModal } from './components/OfficeProfileModal';
 import { OfficialsProfileModal } from './components/OfficialsProfileModal';
 import { FaqModal } from './components/FaqModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
+import { GDriveMenuModal } from './components/GDriveMenuModal';
 import { EditLinkModal } from './components/EditLinkModal';
 import { KilasBalik } from './components/KilasBalik';
 import { EditKilasBalikModal } from './components/EditKilasBalikModal';
@@ -20,14 +21,17 @@ import { NavigationDrawer } from './components/NavigationDrawer';
 import { Footer } from './components/Footer';
 import { SERVICES_DATA } from './data/services';
 import { KILAS_BALIK_DATA } from './data/kilasBalik';
-import { ServiceCategory, ServiceItem, KilasBalikItem } from './types';
+import { ServiceCategory, ServiceItem, KilasBalikItem, AuthSession } from './types';
 import { 
   fetchCustomLinksFromCloud, 
   saveCustomLinkToCloud, 
   deleteCustomLinkFromCloud,
   fetchKilasBalikFromCloud,
   saveKilasBalikItemToCloud,
-  isSupabaseConfigured
+  isSupabaseConfigured,
+  getStoredAuthSession,
+  saveStoredAuthSession,
+  clearStoredAuthSession
 } from './lib/supabase';
 import { 
   Building2, 
@@ -39,7 +43,10 @@ import {
   HardDrive,
   HelpCircle,
   Users,
-  Camera
+  Camera,
+  Lock,
+  KeyRound,
+  UserCheck
 } from 'lucide-react';
 
 export default function App() {
@@ -51,15 +58,15 @@ export default function App() {
   const [isOfficeModalOpen, setIsOfficeModalOpen] = useState(false);
   const [isOfficialsModalOpen, setIsOfficialsModalOpen] = useState(false);
   const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
+  const [isGDriveModalOpen, setIsGDriveModalOpen] = useState(false);
 
-  // Admin authentication state
-  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem('silapas_admin_auth') === 'true';
-    } catch {
-      return false;
-    }
+  // User & Admin authentication session state
+  const [authSession, setAuthSession] = useState<AuthSession | null>(() => {
+    return getStoredAuthSession();
   });
+  const isAdmin = authSession?.role === 'admin';
+  const isUserLoggedIn = Boolean(authSession);
+
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // Edit Link Modal state
@@ -171,22 +178,20 @@ export default function App() {
     };
   }, []);
 
-  const handleLoginSuccess = () => {
-    setIsAdmin(true);
-    try {
-      localStorage.setItem('silapas_admin_auth', 'true');
-    } catch {
-      // ignore
-    }
+  const handleLoginSuccess = (role: 'user' | 'admin', email: string) => {
+    const session: AuthSession = {
+      email,
+      role,
+      name: role === 'admin' ? 'Administrator Lapas' : 'Pegawai Lapas',
+      loginTime: new Date().toISOString(),
+    };
+    setAuthSession(session);
+    saveStoredAuthSession(session);
   };
 
   const handleLogout = () => {
-    setIsAdmin(false);
-    try {
-      localStorage.removeItem('silapas_admin_auth');
-    } catch {
-      // ignore
-    }
+    setAuthSession(null);
+    clearStoredAuthSession();
   };
 
   const handleOpenEditLink = (service: ServiceItem) => {
@@ -339,7 +344,9 @@ export default function App() {
   );
 
   const handleOpenWorkflow = (service: ServiceItem) => {
-    if (service.id === 'sdm-jurnal-harian') {
+    if (service.id === 'data-pegawai-gdrive') {
+      setIsGDriveModalOpen(true);
+    } else if (service.id === 'sdm-jurnal-harian') {
       setIsSdmModalOpen(true);
     } else if (service.id === 'bmn-persediaan' || service.hasWorkflow) {
       setIsBmnModalOpen(true);
@@ -362,6 +369,10 @@ export default function App() {
   };
 
   const handleNavigatePegawai = () => {
+    if (!isUserLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
     setActiveCategory('pegawai');
     setTimeout(() => {
       const el = document.getElementById('data-pegawai');
@@ -379,6 +390,8 @@ export default function App() {
           onOpenMenu={() => setIsDrawerOpen(true)}
           onScrollToSearch={scrollToSearch}
           isAdmin={isAdmin}
+          isUserLoggedIn={isUserLoggedIn}
+          currentUser={authSession}
           onOpenLogin={() => setIsLoginModalOpen(true)}
           onLogout={handleLogout}
         />
@@ -390,6 +403,8 @@ export default function App() {
           setActiveCategory={setActiveCategory}
           totalCount={activeServicesList.length}
           filteredCount={filteredServices.length}
+          isUserLoggedIn={isUserLoggedIn}
+          onOpenLogin={() => setIsLoginModalOpen(true)}
         />
       </section>
 
@@ -400,20 +415,87 @@ export default function App() {
         onNavigateHome={handleNavigateHome}
         onOpenOfficeProfile={() => setIsOfficeModalOpen(true)}
         onOpenOfficialsProfile={() => setIsOfficialsModalOpen(true)}
-        onOpenBmn={() => setIsBmnModalOpen(true)}
-        onOpenJhp={() => setIsSdmModalOpen(true)}
-        onOpenPegawai={handleNavigatePegawai}
+        onOpenBmn={() => {
+          if (!isUserLoggedIn) {
+            setIsLoginModalOpen(true);
+          } else {
+            setIsBmnModalOpen(true);
+          }
+        }}
+        onOpenJhp={() => {
+          if (!isUserLoggedIn) {
+            setIsLoginModalOpen(true);
+          } else {
+            setIsSdmModalOpen(true);
+          }
+        }}
+        onOpenPegawai={() => {
+          if (!isUserLoggedIn) {
+            setIsLoginModalOpen(true);
+          } else {
+            handleNavigatePegawai();
+          }
+        }}
+        onOpenGDriveMenu={() => {
+          if (!isUserLoggedIn) {
+            setIsLoginModalOpen(true);
+          } else {
+            setIsGDriveModalOpen(true);
+          }
+        }}
         onNavigateKilasBalik={handleNavigateKilasBalik}
         onOpenFaq={() => setIsFaqModalOpen(true)}
         isAdmin={isAdmin}
+        isUserLoggedIn={isUserLoggedIn}
+        currentUser={authSession}
         onOpenLogin={() => setIsLoginModalOpen(true)}
         onLogout={handleLogout}
       />
 
       {/* 2. Main Services Content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-        {/* If no services matched the filter */}
-        {filteredServices.length === 0 ? (
+        {/* If user is NOT logged in: Layanan & Data Pegawai do NOT show, Kilas Balik directly appears */}
+        {!isUserLoggedIn ? (
+          <div className="space-y-6 sm:space-y-10">
+            {/* Protected Gate Notice */}
+            <div className="p-4 sm:p-6 bg-gradient-to-r from-blue-900/10 via-amber-500/10 to-blue-900/10 rounded-2xl border border-blue-200/80 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-start gap-3.5">
+                <div className="p-2.5 sm:p-3 bg-[#0B192C] text-amber-400 rounded-xl shadow-xs shrink-0 mt-0.5 md:mt-0">
+                  <Lock className="w-5 h-5 sm:w-6 sm:h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm sm:text-base font-black text-slate-900">
+                      Akses Khusus Pengguna: Layanan &amp; Repositori Google Drive
+                    </h3>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                      Perlu Login User
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
+                    Seksi <span className="font-semibold text-slate-800">Layanan &amp; Website Lapas</span> serta <span className="font-semibold text-slate-800">Data Informasi Pegawai</span> diproteksi khusus bagi aparatur Lapas Perempuan Kelas III Pangkal Pinang. Silakan login akun pengguna (User Pegawai atau Administrator) untuk membuka tautan sistem dan repositori dokumen.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsLoginModalOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0F2C59] hover:bg-[#1E3E62] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow transition-all shrink-0 cursor-pointer"
+              >
+                <KeyRound className="w-4 h-4 text-amber-400" />
+                <span>Login Pegawai / Admin</span>
+              </button>
+            </div>
+
+            {/* LANGSUNG MUNCUL KILASAN BALIK KEGIATAN LAPAS */}
+            <KilasBalik
+              items={kilasBalikList}
+              isAdmin={isAdmin}
+              isLoading={isKilasBalikLoading}
+              onEditItem={handleOpenEditKilasBalik}
+            />
+          </div>
+        ) : filteredServices.length === 0 ? (
           <div className="text-center py-16 px-4 bg-white rounded-2xl border border-slate-200 shadow-sm max-w-xl mx-auto">
             <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
               <SearchX className="w-8 h-8" />
@@ -468,6 +550,7 @@ export default function App() {
                         onOpenWorkflow={handleOpenWorkflow}
                         isAdmin={isAdmin}
                         onEditLink={handleOpenEditLink}
+                        onOpenGDriveMenu={() => setIsGDriveModalOpen(true)}
                       />
                     ))}
                   </div>
@@ -504,6 +587,7 @@ export default function App() {
                         onOpenWorkflow={handleOpenWorkflow}
                         isAdmin={isAdmin}
                         onEditLink={handleOpenEditLink}
+                        onOpenGDriveMenu={() => setIsGDriveModalOpen(true)}
                       />
                     ))}
                   </div>
@@ -552,7 +636,7 @@ export default function App() {
                 className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[10.5px] sm:text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl shadow-2xs transition-colors"
               >
                 <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600" />
-                <span>Peta Jabatan</span>
+                <span>Struktur Organisasi</span>
               </button>
               <button
                 onClick={() => setIsOfficeModalOpen(true)}
@@ -569,18 +653,30 @@ export default function App() {
                 <span>FAQ</span>
               </button>
               <button
-                onClick={() => setIsBmnModalOpen(true)}
-                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[10.5px] sm:text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl shadow-2xs transition-colors"
+                onClick={() => {
+                  if (!isUserLoggedIn) {
+                    setIsLoginModalOpen(true);
+                  } else {
+                    setIsBmnModalOpen(true);
+                  }
+                }}
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[10.5px] sm:text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl shadow-2xs transition-colors cursor-pointer"
               >
-                <FileCheck2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
-                <span>SOP BMN</span>
+                {!isUserLoggedIn ? <Lock className="w-3.5 h-3.5 text-amber-600" /> : <FileCheck2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />}
+                <span>SOP BMN {!isUserLoggedIn && '(Login)'}</span>
               </button>
               <button
-                onClick={() => setIsSdmModalOpen(true)}
-                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[10.5px] sm:text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl shadow-2xs transition-colors"
+                onClick={() => {
+                  if (!isUserLoggedIn) {
+                    setIsLoginModalOpen(true);
+                  } else {
+                    setIsSdmModalOpen(true);
+                  }
+                }}
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[10.5px] sm:text-xs font-bold text-blue-900 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl shadow-2xs transition-colors cursor-pointer"
               >
-                <FileCheck2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600" />
-                <span>SOP SDM</span>
+                {!isUserLoggedIn ? <Lock className="w-3.5 h-3.5 text-amber-600" /> : <FileCheck2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600" />}
+                <span>SOP SDM {!isUserLoggedIn && '(Login)'}</span>
               </button>
             </div>
           </div>
@@ -635,6 +731,12 @@ export default function App() {
       <SdmWorkflowModal
         isOpen={isSdmModalOpen}
         onClose={() => setIsSdmModalOpen(false)}
+      />
+
+      <GDriveMenuModal
+        isOpen={isGDriveModalOpen}
+        onClose={() => setIsGDriveModalOpen(false)}
+        isAdmin={isAdmin}
       />
 
       {/* 5. Footer */}

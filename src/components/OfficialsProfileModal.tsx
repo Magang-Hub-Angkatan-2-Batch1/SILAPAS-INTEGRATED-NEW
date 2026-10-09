@@ -34,7 +34,16 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
   const [petaData, setPetaData] = useState<PetaJabatanData>(() => {
     try {
       const stored = localStorage.getItem('silapas_peta_jabatan');
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.kaurTu && (parsed.kaurTu.title === 'KAUR TU' || !parsed.kaurTu.title)) {
+          parsed.kaurTu.title = 'Kepala Urusan TU';
+        }
+        if (!parsed.logoKananUrl) {
+          parsed.logoKananUrl = '/logo_pemasyarakatan.svg';
+        }
+        return parsed;
+      }
     } catch {
       // fallback
     }
@@ -61,6 +70,12 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
         const stored = localStorage.getItem('silapas_peta_jabatan');
         if (stored) {
           const parsed = JSON.parse(stored);
+          if (parsed.kaurTu && (parsed.kaurTu.title === 'KAUR TU' || !parsed.kaurTu.title)) {
+            parsed.kaurTu.title = 'Kepala Urusan TU';
+          }
+          if (!parsed.logoKananUrl) {
+            parsed.logoKananUrl = '/logo_pemasyarakatan.svg';
+          }
           setPetaData(parsed);
           setKalapasForm(parsed.kepalaLapas);
           setKaurTuForm(parsed.kaurTu);
@@ -72,6 +87,12 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
 
       fetchPetaJabatanFromCloud().then((cloudData) => {
         if (cloudData && isMounted) {
+          if (cloudData.kaurTu && (cloudData.kaurTu.title === 'KAUR TU' || !cloudData.kaurTu.title)) {
+            cloudData.kaurTu.title = 'Kepala Urusan TU';
+          }
+          if (!cloudData.logoKananUrl) {
+            cloudData.logoKananUrl = '/logo_pemasyarakatan.svg';
+          }
           setPetaData(cloudData);
           setKalapasForm(cloudData.kepalaLapas);
           setKaurTuForm(cloudData.kaurTu);
@@ -153,8 +174,8 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-black tracking-tight text-white">
-                  PETA JABATAN &amp; STRUKTUR ORGANISASI
+                <h3 className="text-base sm:text-lg font-black tracking-tight text-white uppercase">
+                  STRUKTUR ORGANISASI
                 </h3>
                 <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold bg-amber-400 text-slate-950 rounded-full">
                   Resmi
@@ -208,7 +229,7 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
             }`}
           >
             <Building className="w-3.5 h-3.5 text-amber-400" />
-            <span>1. Struktur Organisasi (Peta Jabatan)</span>
+            <span>1. Struktur Organisasi</span>
           </button>
 
           {/* TAB 2: PROFIL KALAPAS (SETELAH STRUKTUR ORGANISASI) */}
@@ -490,16 +511,16 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
                     </span>
                   </div>
 
-                  {/* 1. Kaur TU */}
+                  {/* 1. Kepala Urusan TU */}
                   <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-2">
                     <span className="text-xs font-bold text-blue-800 uppercase block">
-                      1. Kaur Tata Usaha (Kaur TU)
+                      1. Kepala Urusan Tata Usaha (Kepala Urusan TU)
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <input
                         type="text"
                         required
-                        placeholder="Nama Kaur TU"
+                        placeholder="Nama Kepala Urusan TU"
                         value={kaurTuForm.name}
                         onChange={(e) => setKaurTuForm({ ...kaurTuForm, name: e.target.value.toUpperCase() })}
                         className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 font-bold"
@@ -514,13 +535,13 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
                       />
                     </div>
                     <ImageUploadField
-                      label="Foto Kaur TU"
+                      label="Foto Kepala Urusan TU"
                       currentUrl={kaurTuForm.photoUrl}
                       onUrlChange={(url) => setKaurTuForm({ ...kaurTuForm, photoUrl: url })}
                     />
                     <textarea
                       rows={2}
-                      placeholder="Tugas pokok Kaur TU..."
+                      placeholder="Tugas pokok Kepala Urusan TU..."
                       value={kaurTuForm.description || ''}
                       onChange={(e) => setKaurTuForm({ ...kaurTuForm, description: e.target.value })}
                       className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 leading-normal"
@@ -717,7 +738,7 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
 
               {/* Grid of 4 Officers */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* 1. Kaur TU */}
+                {/* 1. Kepala Urusan TU */}
                 <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-blue-400 hover:shadow-xs transition-all">
                   <div className="flex items-center gap-3 mb-2.5">
                     {petaData.kaurTu.photoUrl ? (
@@ -734,7 +755,7 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
                         {petaData.kaurTu.name}
                       </h5>
                       <div className="text-[10px] font-mono text-slate-500">NIP. {petaData.kaurTu.nip}</div>
-                      <span className="text-[11px] text-blue-700 font-semibold">Kaur Tata Usaha (Kaur TU)</span>
+                      <span className="text-[11px] text-blue-700 font-semibold">Kepala Urusan Tata Usaha (Kepala Urusan TU)</span>
                     </div>
                   </div>
                   <p className="text-xs text-slate-600 leading-normal">

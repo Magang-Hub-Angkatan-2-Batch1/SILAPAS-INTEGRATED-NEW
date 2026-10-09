@@ -60,7 +60,27 @@ export interface OfficerData {
 
 export interface PetaJabatanData {
   structureImageUrl?: string;
+  logoKiriUrl?: string;
+  logoKananUrl?: string;
   kepalaLapas: OfficerData;
   kaurTu: OfficerData;
   subseksi: OfficerData[];
+}
+
+export interface GDriveOption {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  category?: string;
+  order?: number;
+}
+
+export type UserRole = 'guest' | 'user' | 'admin';
+
+export interface AuthSession {
+  email: string;
+  role: 'user' | 'admin';
+  name?: string;
+  loginTime?: string;
 }

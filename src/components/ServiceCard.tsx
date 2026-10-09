@@ -11,7 +11,8 @@ import {
   ExternalLink, 
   Workflow, 
   Sparkles,
-  Edit3
+  Edit3,
+  FolderOpen
 } from 'lucide-react';
 import { ServiceItem } from '../types';
 
@@ -20,13 +21,15 @@ interface ServiceCardProps {
   onOpenWorkflow: (service: ServiceItem) => void;
   isAdmin?: boolean;
   onEditLink?: (service: ServiceItem) => void;
+  onOpenGDriveMenu?: () => void;
 }
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({ 
   service, 
   onOpenWorkflow,
   isAdmin = false,
-  onEditLink
+  onEditLink,
+  onOpenGDriveMenu
 }) => {
   // Helper to pick the matching Lucide icon
   const renderIcon = () => {
@@ -144,15 +147,27 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
 
       {/* Footer Action Buttons */}
       <div className="p-3.5 pt-0 sm:p-6 sm:pt-0 mt-auto">
-        <a
-          href={service.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold text-white bg-[#0F2C59] hover:bg-[#1E3E62] shadow-xs hover:shadow transition-all group-hover:ring-2 group-hover:ring-sky-400/40"
-        >
-          <span className="truncate">{service.actionText}</span>
-          <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-auto shrink-0 text-sky-300" />
-        </a>
+        {service.id === 'data-pegawai-gdrive' ? (
+          <button
+            type="button"
+            onClick={onOpenGDriveMenu}
+            className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 shadow-xs hover:shadow transition-all group-hover:ring-2 group-hover:ring-emerald-400/40 cursor-pointer"
+          >
+            <FolderOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-200 shrink-0" />
+            <span className="truncate">Pilih Menu Folder Dokumen Pegawai</span>
+            <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-auto shrink-0 text-emerald-200" />
+          </button>
+        ) : (
+          <a
+            href={service.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold text-white bg-[#0F2C59] hover:bg-[#1E3E62] shadow-xs hover:shadow transition-all group-hover:ring-2 group-hover:ring-sky-400/40"
+          >
+            <span className="truncate">{service.actionText}</span>
+            <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-auto shrink-0 text-sky-300" />
+          </a>
+        )}
 
         {/* Admin Edit Link Button */}
         {isAdmin && (
