@@ -35,11 +35,11 @@ export const FaqModal: React.FC<FaqModalProps> = ({ isOpen, onClose }) => {
   const faqs: FaqItem[] = [
     {
       category: 'magang',
-      question: 'Apakah latar belakang dan tujuan pembuatan proyek SILAPAS-INTEGRATED ini?',
+      question: 'Apakah latar belakang dan tujuan pembuatan proyek SILAPAS CIKAR INTEGRATED ini?',
       answer: (
         <div className="space-y-2.5">
           <p className="leading-relaxed">
-            Proyek portal terintegrasi <strong className="text-slate-900">SILAPAS-INTEGRATED (Sistem Informasi Layanan Kehumasan, BMN, dan SDM Lapas)</strong> ini dibangun dan dikembangkan secara khusus untuk <span className="font-semibold text-blue-900">memenuhi kewajiban pembuatan program inovasi teknologi digital selama proses pelaksanaan Magang Hub (Magang Hub Angkatan 2 Batch 1)</span> di Lembaga Pemasyarakatan Perempuan Kelas III Pangkal Pinang.
+            Proyek portal terintegrasi <strong className="text-slate-900">SILAPAS CIKAR INTEGRATED (Sistem Informasi Layanan Kehumasan, BMN, dan SDM Lapas)</strong> ini dibangun dan dikembangkan secara khusus untuk <span className="font-semibold text-blue-900">memenuhi kewajiban pembuatan program inovasi teknologi digital selama proses pelaksanaan Magang Hub (Magang Hub Angkatan 2 Batch 1)</span> di Lembaga Pemasyarakatan Perempuan Kelas III Pangkal Pinang.
           </p>
           <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs">
             💡 <strong>Tujuan Inovasi:</strong> Mengintegrasikan sistem pelaporan mandiri internal (Pengelolaan Persediaan BMN &amp; Jurnal Harian Pegawai SDM), repositori data kepegawaian Google Drive, serta etalase media sosial dan layanan informasi pengaduan masyarakat ke dalam satu pintu akses terpadu yang efisien, transparan, dan akuntabel.
@@ -139,7 +139,7 @@ export const FaqModal: React.FC<FaqModalProps> = ({ isOpen, onClose }) => {
                 </span>
               </div>
               <p className="text-xs text-sky-200">
-                Informasi &amp; Penjelasan Proyek Inovasi SILAPAS-INTEGRATED
+                Informasi &amp; Penjelasan Proyek Inovasi SILAPAS CIKAR INTEGRATED
               </p>
             </div>
           </div>
@@ -211,7 +211,7 @@ export const FaqModal: React.FC<FaqModalProps> = ({ isOpen, onClose }) => {
         {/* Footer */}
         <div className="bg-slate-50 px-5 sm:px-6 py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
           <span className="text-[11px] text-slate-500">
-            SILAPAS-INTEGRATED &bull; Magang Hub Angkatan 2 Batch 1
+            SILAPAS CIKAR INTEGRATED &bull; Magang Hub Angkatan 2 Batch 1
           </span>
           <button
             onClick={onClose}

@@ -58,7 +58,7 @@ export const Hero: React.FC<HeroProps> = ({
         {/* Hero Title and Subtitle */}
         <div className="space-y-0.5 sm:space-y-2 mb-3.5 sm:mb-6 px-2">
           <h1 className="text-xl xs:text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-white drop-shadow-sm">
-            SILAPAS<span className="text-amber-400">-INTEGRATED</span>
+            SILAPAS CIKAR <span className="text-amber-400">INTEGRATED</span>
           </h1>
           <p className="text-xs xs:text-sm sm:text-lg md:text-xl text-sky-200 font-semibold max-w-3xl mx-auto leading-snug">
             (Sistem Layanan Kehumasan, BMN, dan SDM Lapas)

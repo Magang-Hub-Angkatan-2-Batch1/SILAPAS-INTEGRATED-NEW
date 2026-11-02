@@ -845,7 +845,7 @@ export const OfficialsProfileModal: React.FC<OfficialsProfileModalProps> = ({
         {/* Footer */}
         <div className="bg-slate-50 px-5 sm:px-6 py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
           <span className="text-[11px] text-slate-500">
-            SILAPAS-INTEGRATED &bull; Lapas Perempuan Kelas III Pangkal Pinang
+            SILAPAS CIKAR INTEGRATED &bull; Lapas Perempuan Kelas III Pangkal Pinang
           </span>
           <button
             onClick={onClose}

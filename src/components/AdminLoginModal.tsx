@@ -116,7 +116,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-black tracking-tight text-white uppercase flex items-center gap-1.5">
-                <span>LOGIN PORTAL SILAPAS</span>
+                <span>LOGIN PORTAL SILAPAS CIKAR INTEGRATED</span>
               </h3>
               <p className="text-[11px] text-sky-200">
                 Akses Layanan &amp; Repositori Data Pegawai Lapas
@@ -255,7 +255,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               </div>
               <p className="text-[10px] text-slate-400 mt-1">
                 {selectedRole === 'admin' 
-                  ? 'Gunakan kata sandi administrator SILAPAS'
+                  ? 'Gunakan kata sandi administrator SILAPAS CIKAR INTEGRATED'
                   : 'Kata sandi pegawai Lapas (Bawaan: pegawai123 atau lapas3pkp)'}
               </p>
             </div>

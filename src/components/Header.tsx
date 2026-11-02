@@ -125,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onOpenMenu}
             className="p-1.5 sm:p-2 text-slate-200 hover:text-amber-300 bg-slate-800/80 hover:bg-slate-700/90 active:bg-slate-900 border border-slate-700 rounded-xl transition-all flex items-center justify-center shrink-0 shadow-xs focus:outline-none focus:ring-2 focus:ring-amber-400/50"
             aria-label="Buka Menu Navigasi"
-            title="Menu Navigasi SILAPAS"
+            title="Menu Navigasi SILAPAS CIKAR INTEGRATED"
           >
             <Menu className="w-5 h-5 text-amber-400" />
           </button>
@@ -138,7 +138,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="min-w-0 flex-1 overflow-hidden">
             <div className="flex items-center gap-1.5">
               <h1 className="text-sm sm:text-base md:text-xl font-extrabold tracking-tight text-white truncate leading-tight">
-                <span>SILAPAS</span><span className="text-amber-400">-INTEGRATED</span>
+                <span>SILAPAS CIKAR</span> <span className="text-amber-400">INTEGRATED</span>
               </h1>
               <span className="bg-blue-900/60 text-blue-300 border border-blue-700/50 text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider hidden lg:inline-block shrink-0">
                 Hub Informasi

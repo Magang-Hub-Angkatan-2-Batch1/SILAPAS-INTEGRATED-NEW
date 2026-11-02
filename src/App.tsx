@@ -616,7 +616,7 @@ export default function App() {
                   Komitmen Pelayanan Publik Prima &amp; Terintegrasi
                 </h4>
                 <p className="text-[11px] sm:text-xs text-slate-600 leading-normal sm:leading-relaxed max-w-3xl mt-0.5 line-clamp-2 sm:line-clamp-none">
-                  Setiap layanan pada portal SILAPAS-INTEGRATED diawasi secara langsung oleh Sub Bagian Tata Usaha 
+                  Setiap layanan pada portal SILAPAS CIKAR INTEGRATED diawasi secara langsung oleh Sub Bagian Tata Usaha 
                   dan Kehumasan Lapas Perempuan Kelas III Pangkal Pinang sesuai Standar Operasional Prosedur (SOP) 
                   Kementerian Imigrasi dan Pemasyarakatan Republik Indonesia.
                 </p>

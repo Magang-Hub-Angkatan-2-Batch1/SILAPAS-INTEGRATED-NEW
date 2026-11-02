@@ -106,7 +106,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             />
             <div>
               <span className="text-sm font-extrabold tracking-tight text-white block leading-tight">
-                SILAPAS<span className="text-amber-400">-INTEGRATED</span>
+                SILAPAS CIKAR <span className="text-amber-400">INTEGRATED</span>
               </span>
               <span className="text-[10px] text-slate-400 block leading-tight">
                 LPP Kelas III Pangkalpinang

@@ -70,7 +70,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLogin }) => {
               />
               <div>
                 <h4 className="text-base font-extrabold text-white tracking-tight">
-                  SILAPAS<span className="text-amber-400">-INTEGRATED</span>
+                  SILAPAS CIKAR <span className="text-amber-400">INTEGRATED</span>
                 </h4>
                 <p className="text-xs text-sky-200 font-semibold leading-tight">
                   Lapas Perempuan Kelas III Pangkal Pinang
@@ -221,7 +221,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLogin }) => {
             Hak cipta &copy; {currentYear} <strong className="text-slate-200">Humas Lapas Perempuan Kelas III Pangkal Pinang</strong>. Seluruh hak cipta dilindungi undang-undang.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2 text-slate-500 text-[11px]">
-            <span>SILAPAS-INTEGRATED v1.0</span>
+            <span>SILAPAS CIKAR INTEGRATED v1.0</span>
             <span>&bull;</span>
             <span className="text-amber-400/90 font-medium">Pemasyarakatan PASTI</span>
             {onOpenLogin && (
